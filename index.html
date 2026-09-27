@@ -133,7 +133,7 @@
          onclick="activate('return')">
       <div class="ring"></div>
     </div>
-    <div class="hotspot" id="hs-hub-left" data-title="Hub 01–10" data-desc="Distribusi barang antar Hub 01–10 menggunakan forklift."
+    <div class="hotspot" id="hs-hub-left" data-title="Hub 01–10" data-desc="Distribusi barang antar Hub 01–10 menggunakan forklift. Sisi kiri ini juga jadi titik staging & muat truk outbound."
          style="left:14.65%; top:14.65%; width:18.07%; height:18.55%;"
          onclick="activate('hub-left')">
       <div class="ring"></div>
@@ -143,7 +143,7 @@
          onclick="activate('hub-center')">
       <div class="ring"></div>
     </div>
-    <div class="hotspot" id="hs-hub-right" data-title="Hub 11–20" data-desc="Distribusi barang antar Hub 11–20 menggunakan forklift."
+    <div class="hotspot" id="hs-hub-right" data-title="Hub 11–20" data-desc="Distribusi barang antar Hub 11–20 menggunakan forklift. Sisi kanan ini juga jadi titik staging & muat truk outbound."
          style="left:53.71%; top:14.65%; width:19.04%; height:18.55%;"
          onclick="activate('hub-right')">
       <div class="ring"></div>
@@ -178,7 +178,7 @@
          onclick="activate('inbound-left')">
       <div class="ring"></div>
     </div>
-    <div class="hotspot" id="hs-inbound-right" data-title="Pintu Inbound (Dock 06–10)" data-desc="Pemuatan barang, cek dokumen, truk berangkat keluar area gudang (proses outbound)."
+    <div class="hotspot" id="hs-inbound-right" data-title="Pintu Inbound (Dock 06–10)" data-desc="Area bongkar: penerimaan barang, scan & input data, truk merapat lalu proses masuk ke area gudang — sama seperti Dock 01–05."
          style="left:63.96%; top:45.9%; width:34.18%; height:10.09%;"
          onclick="activate('inbound-right')">
       <div class="ring"></div>
@@ -584,6 +584,30 @@
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="hub-left" style="left:16.5%; top:18.5%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="hub-left" style="left:16.5%; top:28.5%; animation-delay:0.3s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="hub-right" style="left:70.5%; top:18.5%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="hub-right" style="left:70.5%; top:28.5%; animation-delay:0.3s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
     </svg></div>
   <svg class="route-layer" id="routeLayer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="currentColor"/></marker></defs><path id="routePath" d="" fill="none" stroke="currentColor" stroke-width="0.55" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/></svg>
     <div class="route-label" id="routeLabel">Jalur proses</div>
@@ -596,13 +620,13 @@
   <section class="timeline-wrap">
     <div class="section-title"><span>WORKFLOW TIMELINE</span><small id="workflowMode">Manual</small></div>
     <div class="timeline" id="timeline">
-      <button class="step-btn" data-step="1" data-key="inbound-left" onclick="selectStep(1)"><span class="num">1</span><span>Inbound</span></button>
+      <button class="step-btn" data-step="1" data-key="inbound-left" onclick="selectStep(1)"><span class="num">1</span><span>Inbound (01–05 & 06–10)</span></button>
       <i></i><button class="step-btn" data-step="2" data-key="penampungan" onclick="selectStep(2)"><span class="num">2</span><span>Penampungan</span></button>
       <i></i><button class="step-btn" data-step="3" data-key="sortir" onclick="selectStep(3)"><span class="num">3</span><span>Sortir Manual</span></button>
       <i></i><button class="step-btn" data-step="4" data-key="bagging" onclick="selectStep(4)"><span class="num">4</span><span>Bagging & Packing</span></button>
       <i></i><button class="step-btn" data-step="5" data-key="hub-center" onclick="selectStep(5)"><span class="num">5</span><span>Hub</span></button>
-      <i></i><button class="step-btn" data-step="6" data-key="inbound-right" onclick="selectStep(6)"><span class="num">6</span><span>Staging</span></button>
-      <i></i><button class="step-btn" data-step="7" data-key="inbound-right" onclick="selectStep(7)"><span class="num">7</span><span>Outbound</span></button>
+      <i></i><button class="step-btn" data-step="6" data-key="hub-left" onclick="selectStep(6)"><span class="num">6</span><span>Staging (Hub Kiri/Kanan)</span></button>
+      <i></i><button class="step-btn" data-step="7" data-key="hub-right" onclick="selectStep(7)"><span class="num">7</span><span>Outbound (Muat Truk Hub)</span></button>
       <i></i><button class="step-btn" data-step="8" data-key="return" onclick="selectStep(8)"><span class="num">8</span><span>Return (Paralel)</span></button>
     </div>
   </section>
@@ -621,21 +645,22 @@
 const zoneMeta={};
 document.querySelectorAll('.hotspot').forEach(el=>zoneMeta[el.id.replace('hs-','')]={title:el.dataset.title,desc:el.dataset.desc});
 const steps=[
- {key:'inbound-left',title:'Inbound',desc:'Penerimaan barang, scan dan input data sebelum masuk area gudang.',route:[[5,52],[13,52],[19,50],[19,44],[13,40],[10,36]],label:'INBOUND → PENAMPUNGAN'},
+ {key:['inbound-left','inbound-right'],title:'Inbound (Dock 01–05 & 06–10)',desc:'Kedua pintu sama-sama berfungsi sebagai area bongkar: penerimaan barang, scan dan input data sebelum masuk ke area gudang.',route:[[5,52],[13,52],[19,50],[19,44],[13,40],[10,36]],label:'INBOUND → PENAMPUNGAN'},
  {key:'penampungan',title:'Penampungan',desc:'Barang hasil bongkar ditampung sementara sebelum disortir ke hub.',route:[[10,36],[10,32],[20,32],[31,35]],label:'PENAMPUNGAN → SORTIR'},
  {key:'sortir',title:'Sortir Manual',desc:'Pemisahan barang ke keranjang tujuan sebelum proses lanjut.',route:[[31,35],[38,37],[46,38],[54,38],[59,38]],label:'SORTIR MANUAL'},
  {key:'bagging',title:'Bagging & Packing',desc:'Barang masuk karung, ditimbang, seal, lalu diberi label.',route:[[48,38],[45,42],[40,44],[52,44],[64,44],[76,44]],label:'SORTIR → BAGGING'},
- {key:'hub-center',title:'Hub',desc:'Forklift mendistribusikan barang ke hub tujuan.',route:[[43,38],[43,32],[43,24],[63,24]],label:'BAGGING → HUB'},
- {key:'inbound-right',title:'Staging',desc:'Barang yang siap dikirim dikumpulkan dan menunggu proses outbound.',route:[[63,24],[72,36],[80,48],[86,52],[92,52]],label:'HUB → STAGING'},
- {key:'inbound-right',title:'Outbound',desc:'Pengecekan dokumen dan pemuatan kendaraan sebelum berangkat.',route:[[92,52],[84,52],[74,52],[67,52]],label:'STAGING → OUTBOUND'},
+ {key:'hub-center',title:'Hub',desc:'Forklift mendistribusikan bag ke area Hub kiri (01–10) dan kanan (11–20) untuk disiapkan naik truk.',route:[[43,38],[43,32],[43,24],[63,24]],label:'BAGGING → HUB'},
+ {key:['hub-left','hub-right'],title:'Staging',desc:'Barang yang sudah di-hub dikumpulkan di dekat truk yang parkir di sisi kiri dan kanan hub, menunggu jadwal muat.',route:[[43,24],[30,22],[20,20]],label:'HUB → STAGING (SISI KIRI/KANAN)'},
+ {key:['hub-left','hub-right'],title:'Outbound',desc:'Dokumen dicek dan barang dimuat ke truk yang parkir di sisi hub kiri/kanan, lalu truk berangkat keluar area gudang.',route:[[20,20],[30,18],[43,18],[56,18],[68,18],[80,20]],label:'OUTBOUND — MUAT TRUK DI HUB'},
  {key:'return',title:'Return Processing',desc:'Proses terpisah/paralel dari alur outbound: cek, scan, sortir, repack atau hold barang return. Truk retur masuk-keluar lewat jalur samping sendiri.',route:[[88,13],[76,13],[60,13],[45,13],[31,13],[11,13]],label:'ALUR TERPISAH — RETURN'}
 ];
 let current=0,playing=false,timerStart=0,elapsed=0,interval=null,speed=1,raf=0;
 const $=id=>document.getElementById(id);
-function countFor(key){const figs=[...document.querySelectorAll('.fig[data-zone="'+key+'"]')]; return {op:figs.filter(x=>x.classList.contains('fig-person')).length,truck:figs.filter(x=>x.classList.contains('fig-truck')).length,fork:figs.filter(x=>x.classList.contains('fig-fork')).length};}
+function keysArr(k){return Array.isArray(k)?k:[k];}
+function countFor(keys){const list=keysArr(keys);let figs=[];list.forEach(k=>{figs=figs.concat([...document.querySelectorAll('.fig[data-zone="'+k+'"]')]);});return {op:figs.filter(x=>x.classList.contains('fig-person')).length,truck:figs.filter(x=>x.classList.contains('fig-truck')).length,fork:figs.filter(x=>x.classList.contains('fig-fork')).length};}
 function drawRoute(points){const path=$('routePath'); if(!points||points.length<2){$('routeLayer').classList.remove('show');$('routeLabel').classList.remove('show');return;} let d='M '+points[0][0]+' '+points[0][1]; for(let i=1;i<points.length;i++)d+=' L '+points[i][0]+' '+points[i][1]; path.setAttribute('d',d);$('routeLayer').classList.add('show');$('routeLabel').classList.add('show');}
-function activate(key,stepNo=current+1){document.querySelectorAll('.hotspot').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.fig').forEach(x=>{x.classList.remove('on','walking')});const target=$('hs-'+key);if(target)target.classList.add('active');const figs=document.querySelectorAll('.fig[data-zone="'+key+'"]');figs.forEach(x=>{x.classList.add('on','walking')});const meta=zoneMeta[key];if(meta){$('infobar').innerHTML='<div class="title">'+meta.title+'</div><div class="desc">'+meta.desc+'</div>';$('currentTitle').textContent=steps[stepNo-1]?.title||meta.title;$('currentDesc').textContent=steps[stepNo-1]?.desc||meta.desc;}
- document.querySelectorAll('.step-btn').forEach(x=>{const n=+x.dataset.step;x.classList.toggle('selected',n===stepNo);x.classList.toggle('done',n<stepNo)});$('stepText').textContent=stepNo+' / 8';$('progressBar').style.width=(stepNo/8*100)+'%';const c=countFor(key);$('operatorCount').textContent=c.op;$('forkliftCount').textContent=c.fork;$('truckCount').textContent=c.truck;const st=steps[stepNo-1];drawRoute(st?.route);$('routeLabel').textContent=st?.label||'Jalur proses';$('statusText').textContent=playing?'RUNNING':'READY';current=stepNo-1;}
+function activate(key,stepNo=current+1){const keys=keysArr(key);document.querySelectorAll('.hotspot').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.fig').forEach(x=>{x.classList.remove('on','walking')});keys.forEach(k=>{const target=$('hs-'+k);if(target)target.classList.add('active');});keys.forEach(k=>{document.querySelectorAll('.fig[data-zone="'+k+'"]').forEach(x=>{x.classList.add('on','walking')});});const meta=zoneMeta[keys[0]];if(meta){const st0=steps[stepNo-1];$('infobar').innerHTML='<div class="title">'+(st0?.title||meta.title)+'</div><div class="desc">'+(st0?.desc||meta.desc)+'</div>';$('currentTitle').textContent=st0?.title||meta.title;$('currentDesc').textContent=st0?.desc||meta.desc;}
+ document.querySelectorAll('.step-btn').forEach(x=>{const n=+x.dataset.step;x.classList.toggle('selected',n===stepNo);x.classList.toggle('done',n<stepNo)});$('stepText').textContent=stepNo+' / 8';$('progressBar').style.width=(stepNo/8*100)+'%';const c=countFor(keys);$('operatorCount').textContent=c.op;$('forkliftCount').textContent=c.fork;$('truckCount').textContent=c.truck;const st=steps[stepNo-1];drawRoute(st?.route);$('routeLabel').textContent=st?.label||'Jalur proses';$('statusText').textContent=playing?'RUNNING':'READY';current=stepNo-1;}
 function selectStep(n){playing=false;clearTimeout(interval);$('playBtn').textContent='▶ Mulai Alur';activate(steps[n-1].key,n);resetClock();$('workflowMode').textContent='Manual';}
 function toggleSimulation(){if(playing){pauseSimulation();return;}playing=true;$('playBtn').textContent='⏸ Pause Alur';$('workflowMode').textContent='AUTO SIMULATION';$('statusText').textContent='RUNNING';timerStart=performance.now()-elapsed;runClock();runStep();}
 function runStep(){activate(steps[current].key,current+1);interval=setTimeout(()=>{if(!playing)return;current=(current+1)%steps.length;if(current===0)elapsed=0;runStep();},Math.max(1800,4200/speed));}
