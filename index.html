@@ -127,6 +127,7 @@
   </section>
   <div class="stage">
     <img src="denah-gudang-1.webp" alt="Denah gudang dan alur operasional" loading="eager" decoding="async">
+
     <div class="hotspot" id="hs-return" data-title="Return Processing" data-desc="Cek, scan, sortir, repack/hold barang return. 5 operator (R1, R2, R4, R5 + 1 station). Truk R3 keluar-masuk lewat jalur samping."
          style="left:21.97%; top:6.18%; width:41.02%; height:8.14%;"
          onclick="activate('return')">
@@ -596,13 +597,13 @@
     <div class="section-title"><span>WORKFLOW TIMELINE</span><small id="workflowMode">Manual</small></div>
     <div class="timeline" id="timeline">
       <button class="step-btn" data-step="1" data-key="inbound-left" onclick="selectStep(1)"><span class="num">1</span><span>Inbound</span></button>
-      <i></i><button class="step-btn" data-step="2" data-key="sortir" onclick="selectStep(2)"><span class="num">2</span><span>Sortir Manual</span></button>
-      <i></i><button class="step-btn" data-step="3" data-key="bagging" onclick="selectStep(3)"><span class="num">3</span><span>Bagging & Packing</span></button>
-      <i></i><button class="step-btn" data-step="4" data-key="hub-center" onclick="selectStep(4)"><span class="num">4</span><span>Hub</span></button>
-      <i></i><button class="step-btn" data-step="5" data-key="bagging" onclick="selectStep(5)"><span class="num">5</span><span>Bag Selesai</span></button>
+      <i></i><button class="step-btn" data-step="2" data-key="penampungan" onclick="selectStep(2)"><span class="num">2</span><span>Penampungan</span></button>
+      <i></i><button class="step-btn" data-step="3" data-key="sortir" onclick="selectStep(3)"><span class="num">3</span><span>Sortir Manual</span></button>
+      <i></i><button class="step-btn" data-step="4" data-key="bagging" onclick="selectStep(4)"><span class="num">4</span><span>Bagging & Packing</span></button>
+      <i></i><button class="step-btn" data-step="5" data-key="hub-center" onclick="selectStep(5)"><span class="num">5</span><span>Hub</span></button>
       <i></i><button class="step-btn" data-step="6" data-key="inbound-right" onclick="selectStep(6)"><span class="num">6</span><span>Staging</span></button>
       <i></i><button class="step-btn" data-step="7" data-key="inbound-right" onclick="selectStep(7)"><span class="num">7</span><span>Outbound</span></button>
-      <i></i><button class="step-btn" data-step="8" data-key="return" onclick="selectStep(8)"><span class="num">8</span><span>Return Processing</span></button>
+      <i></i><button class="step-btn" data-step="8" data-key="return" onclick="selectStep(8)"><span class="num">8</span><span>Return (Paralel)</span></button>
     </div>
   </section>
   <section class="actions">
@@ -620,14 +621,14 @@
 const zoneMeta={};
 document.querySelectorAll('.hotspot').forEach(el=>zoneMeta[el.id.replace('hs-','')]={title:el.dataset.title,desc:el.dataset.desc});
 const steps=[
- {key:'inbound-left',title:'Inbound',desc:'Penerimaan barang, scan dan input data sebelum masuk area gudang.',route:[[5,52],[18,52],[31,52],[31,44],[24,44]],label:'INBOUND → PENAMPUNGAN'},
- {key:'sortir',title:'Sortir Manual',desc:'Pemisahan barang ke keranjang tujuan sebelum proses lanjut.',route:[[31,44],[38,38],[46,38],[54,38],[59,38]],label:'PENAMPUNGAN → SORTIR'},
- {key:'bagging',title:'Bagging & Packing',desc:'Barang masuk karung, ditimbang, seal, lalu diberi label.',route:[[20,44],[31,44],[42,44],[53,44],[64,44],[76,44]],label:'SORTIR → BAGGING'},
+ {key:'inbound-left',title:'Inbound',desc:'Penerimaan barang, scan dan input data sebelum masuk area gudang.',route:[[5,52],[13,52],[19,50],[19,44],[13,40],[10,36]],label:'INBOUND → PENAMPUNGAN'},
+ {key:'penampungan',title:'Penampungan',desc:'Barang hasil bongkar ditampung sementara sebelum disortir ke hub.',route:[[10,36],[10,32],[20,32],[31,35]],label:'PENAMPUNGAN → SORTIR'},
+ {key:'sortir',title:'Sortir Manual',desc:'Pemisahan barang ke keranjang tujuan sebelum proses lanjut.',route:[[31,35],[38,37],[46,38],[54,38],[59,38]],label:'SORTIR MANUAL'},
+ {key:'bagging',title:'Bagging & Packing',desc:'Barang masuk karung, ditimbang, seal, lalu diberi label.',route:[[48,38],[45,42],[40,44],[52,44],[64,44],[76,44]],label:'SORTIR → BAGGING'},
  {key:'hub-center',title:'Hub',desc:'Forklift mendistribusikan barang ke hub tujuan.',route:[[43,38],[43,32],[43,24],[63,24]],label:'BAGGING → HUB'},
- {key:'bagging',title:'Bag Selesai',desc:'Bag selesai diverifikasi dan siap dipindahkan ke staging.',route:[[76,44],[68,44],[64,44]],label:'BAGGING → BAG SELESAI'},
- {key:'inbound-right',title:'Staging',desc:'Barang yang siap dikirim dikumpulkan dan menunggu proses outbound.',route:[[64,52],[74,52],[84,52],[92,52]],label:'STAGING'},
- {key:'inbound-right',title:'Outbound',desc:'Pengecekan dokumen dan pemuatan kendaraan sebelum berangkat.',route:[[92,52],[84,52],[74,52],[67,52]],label:'OUTBOUND → DOCK'},
- {key:'return',title:'Return Processing',desc:'Cek, scan, sortir, repack atau hold barang return.',route:[[88,13],[76,13],[60,13],[45,13],[31,13],[11,13]],label:'RETURN PROCESSING'}
+ {key:'inbound-right',title:'Staging',desc:'Barang yang siap dikirim dikumpulkan dan menunggu proses outbound.',route:[[63,24],[72,36],[80,48],[86,52],[92,52]],label:'HUB → STAGING'},
+ {key:'inbound-right',title:'Outbound',desc:'Pengecekan dokumen dan pemuatan kendaraan sebelum berangkat.',route:[[92,52],[84,52],[74,52],[67,52]],label:'STAGING → OUTBOUND'},
+ {key:'return',title:'Return Processing',desc:'Proses terpisah/paralel dari alur outbound: cek, scan, sortir, repack atau hold barang return. Truk retur masuk-keluar lewat jalur samping sendiri.',route:[[88,13],[76,13],[60,13],[45,13],[31,13],[11,13]],label:'ALUR TERPISAH — RETURN'}
 ];
 let current=0,playing=false,timerStart=0,elapsed=0,interval=null,speed=1,raf=0;
 const $=id=>document.getElementById(id);
