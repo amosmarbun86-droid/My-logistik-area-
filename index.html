@@ -1,1 +1,619 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Denah Gudang & Alur Operasional — Interaktif</title>
+<style>
+  :root{
+    --navy:#0a2f5c; --navy-deep:#071f3d; --gold:#f2a93c; --gold-dark:#c97f16; --shirt:#2f6fb3; --skin:#e8b98a;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--navy-deep);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#10233f;padding:16px 10px 40px;}
+  .wrap{max-width:1000px;margin:0 auto;}
+  header{text-align:center;color:#fff;margin-bottom:10px;}
+  header h1{font-size:clamp(1.05rem,4vw,1.5rem);margin:0 0 4px;}
+  header p{margin:0;color:#a9c1e0;font-size:.82rem;}
+
+  .stage{position:relative; border-radius:14px; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,.35); background:#dbe6f4;}
+  .stage img{display:block; width:100%; height:auto;}
+
+  .hotspot{ position:absolute; cursor:pointer; }
+  .ring{
+    position:absolute; inset:0; border-radius:10px;
+    border:3px solid var(--gold); opacity:0; box-shadow:0 0 0 0 rgba(242,169,60,.6);
+    transition:opacity .25s;
+  }
+  .hotspot:hover .ring{ opacity:.5; }
+  .hotspot.active .ring{ opacity:1; animation:pulseRing 1.4s ease-out infinite; }
+  @keyframes pulseRing{
+    0%{box-shadow:0 0 0 0 rgba(242,169,60,.55);}
+    100%{box-shadow:0 0 0 14px rgba(242,169,60,0);}
+  }
+
+  .fig{
+    position:absolute; width:2.6%; margin-left:-1.3%; margin-top:-1.9%;
+    transform-origin:center bottom; pointer-events:none;
+    opacity:0; transition:opacity .2s; z-index:5;
+  }
+  .fig.small{ width:1.7%; margin-left:-0.85%; margin-top:-1.2%; }
+  .fig-fork{ width:4%; margin-left:-2%; }
+  .fig-truck{ width:2.1%; margin-left:-1.05%; margin-top:-2.9%; }
+  .fig-truck-big{ width:3.4%; margin-left:-1.7%; margin-top:-4.6%; }
+  .fig.on{ opacity:1; }
+  .fig svg{ width:100%; height:auto; display:block; overflow:visible; }
+
+  .p-head{ fill:var(--skin); stroke:#8a5a34; stroke-width:.4; }
+  .p-torso{ fill:var(--shirt); stroke:#123a63; stroke-width:.4; }
+  .p-leg{ fill:#1c2b46; }
+  .p-arm{ fill:var(--shirt); stroke:#123a63; stroke-width:.4; transform-origin:15.5px 11px; }
+  .fig.on .p-body{ animation:pBob 1.1s ease-in-out infinite; }
+  .fig.on .p-arm{ animation:pArm 1.1s ease-in-out infinite; }
+  @keyframes pBob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-1.1px);} }
+  @keyframes pArm{ 0%,100%{transform:rotate(-22deg);} 50%{transform:rotate(20deg);} }
+
+  .f-body{ fill:var(--gold); stroke:var(--gold-dark); stroke-width:.6; }
+  .f-mast{ fill:#333; }
+  .f-fork{ fill:#666; }
+  .f-wheel{ fill:#222; }
+  .fig.on .fig-fork{ animation:forkDrive 2.6s ease-in-out infinite; }
+  @keyframes forkDrive{ 0%{transform:translateX(-10px);} 50%{transform:translateX(10px);} 100%{transform:translateX(-10px);} }
+
+  .t-trailer{ fill:#f2f5f9; stroke:#8a97ab; stroke-width:.5; }
+  .t-cab{ fill:#c94a3d; stroke:#8a2e24; stroke-width:.5; }
+  .t-windshield{ fill:#bfe3ff; }
+  .t-wheel{ fill:#111; }
+  .fig.on .fig-truck{ animation:truckNudge 2.4s ease-in-out infinite; }
+  @keyframes truckNudge{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5%);} }
+  .fig.on .fig-truck-big{ animation:truckDrive 3.2s ease-in-out infinite; }
+  @keyframes truckDrive{ 0%{transform:translateY(0);} 50%{transform:translateY(-35%);} 100%{transform:translateY(0);} }
+
+  .infobar{
+    margin-top:14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.15);
+    border-radius:12px; padding:14px 16px; min-height:64px; color:#dbe6f5;
+  }
+  .infobar .title{ color:#fff; font-weight:700; font-size:.95rem; margin-bottom:4px; }
+  .infobar .desc{ font-size:.85rem; line-height:1.4; color:#c6d6ee; }
+  .infobar .placeholder{ color:#8fa6c8; font-size:.82rem; }
+
+  .controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
+  .controls.secondary-row{ margin-top:8px; }
+  .step-btn{
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18);
+    color:#dbe6f5; border-radius:999px; padding:8px 14px; font-size:.8rem;
+    display:flex; align-items:center; gap:8px; cursor:pointer; transition:background .25s,border-color .25s,transform .15s;
+  }
+  .step-btn .num{width:20px;height:20px;border-radius:50%;background:var(--gold-dark);color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .step-btn.selected{ background:rgba(242,169,60,.2); border-color:var(--gold); transform:translateY(-1px); }
+  .step-btn.selected .num{ background:var(--gold); color:var(--navy-deep); }
+
+  .toolbar{display:flex;justify-content:center;gap:10px;margin-top:12px;}
+  .toolbar button{ background:rgba(255,255,255,.1); color:#dbe6f5; border:none; border-radius:8px; padding:8px 16px; font-size:.82rem; font-weight:600; cursor:pointer; }
+  .hint{text-align:center;color:#9fb6d6;font-size:.75rem;margin-top:14px;}
+
+  @media (prefers-reduced-motion: reduce){ .ring, .fig.on .p-body, .fig.on .p-arm, .fig.on .fig-fork, .fig.on .fig-truck, .fig.on .fig-truck-big { animation:none!important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Denah Gudang &amp; Alur Operasional</h1>
+    <p>Klik area pada gambar — petugas dan truk di posisi itu akan bergerak</p>
+  </header>
+
+  <div class="stage">
+    <img src="denah-gudang.webp" alt="Denah gudang">
+    
+    <div class="hotspot" id="hs-return" data-title="Return Processing" data-desc="Cek, scan, sortir, repack/hold barang return. 5 operator (R1, R2, R4, R5 + 1 station). Truk R3 keluar-masuk lewat jalur samping."
+         style="left:21.97%; top:6.18%; width:41.02%; height:8.14%;"
+         onclick="activate('return')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-hub-left" data-title="Hub 01–10" data-desc="Distribusi barang antar Hub 01–10 menggunakan forklift."
+         style="left:14.65%; top:14.65%; width:18.07%; height:18.55%;"
+         onclick="activate('hub-left')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-hub-center" data-title="Area Tengah Gudang" data-desc="Forklift bergerak mendistribusikan barang antar hub."
+         style="left:32.71%; top:14.65%; width:21.0%; height:18.55%;"
+         onclick="activate('hub-center')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-hub-right" data-title="Hub 11–20" data-desc="Distribusi barang antar Hub 11–20 menggunakan forklift."
+         style="left:53.71%; top:14.65%; width:19.04%; height:18.55%;"
+         onclick="activate('hub-right')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-barhal" data-title="Area Barhal" data-desc="Barang bernilai tinggi, kontrol khusus. 4 operator."
+         style="left:17.09%; top:33.07%; width:17.58%; height:7.81%;"
+         onclick="activate('barhal')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-sortir" data-title="Sortir Manual" data-desc="Pemisahan barang ke keranjang tujuan sebelum proses lanjut. 4 operator."
+         style="left:35.16%; top:33.07%; width:26.86%; height:7.81%;"
+         onclick="activate('sortir')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-treaser" data-title="Area Treaser & Damage" data-desc="Penanganan barang rusak, perhitungan khusus. 2 operator."
+         style="left:62.99%; top:33.07%; width:18.07%; height:7.81%;"
+         onclick="activate('treaser')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-bagging" data-title="Bagging & Packing" data-desc="Barang masuk karung, ditimbang, seal, lalu diberi label. 6 operator."
+         style="left:16.6%; top:40.89%; width:67.38%; height:5.01%;"
+         onclick="activate('bagging')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-security" data-title="Pos Security" data-desc="Cek body operator setiap masuk dan keluar area gudang."
+         style="left:37.6%; top:45.9%; width:24.41%; height:9.44%;"
+         onclick="activate('security')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-inbound-left" data-title="Pintu Inbound (Dock 01–05)" data-desc="Penerimaan barang, scan & input data, truk merapat lalu proses masuk ke area gudang."
+         style="left:1.95%; top:45.9%; width:34.18%; height:10.09%;"
+         onclick="activate('inbound-left')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-inbound-right" data-title="Pintu Inbound (Dock 06–10)" data-desc="Pemuatan barang, cek dokumen, truk berangkat keluar area gudang (proses outbound)."
+         style="left:63.96%; top:45.9%; width:34.18%; height:10.09%;"
+         onclick="activate('inbound-right')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-titik-kumpul" data-title="Titik Kumpul" data-desc="Assembly point untuk keadaan darurat."
+         style="left:0.98%; top:58.59%; width:18.55%; height:3.58%;"
+         onclick="activate('titik-kumpul')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-penampungan" data-title="Area Penampungan Barang Inbound" data-desc="Penampungan sementara hasil bongkar sebelum disortir ke hub."
+         style="left:1.46%; top:25.72%; width:18.07%; height:13.67%;"
+         onclick="activate('penampungan')">
+      <div class="ring"></div>
+    </div>
+    <div class="hotspot" id="hs-kantor-cctv" data-title="Kantor CCTV" data-desc="Ruang kontrol — memantau seluruh area gudang lewat CCTV 24 jam."
+         style="left:83.01%; top:26.69%; width:14.65%; height:9.77%;"
+         onclick="activate('kantor-cctv')">
+      <div class="ring"></div>
+    </div>
+    <div class="fig fig-person" data-zone="return" style="left:26.07%; top:12.85%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="return" style="left:32.64%; top:12.85%; animation-delay:0.15s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="return" style="left:39.2%; top:12.85%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="return" style="left:45.76%; top:12.85%; animation-delay:0.45s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="return" style="left:52.32%; top:12.85%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="return" style="left:58.89%; top:12.85%; animation-delay:0.75s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="barhal" style="left:19.73%; top:37.91%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="barhal" style="left:24.12%; top:37.91%; animation-delay:0.2s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="barhal" style="left:28.52%; top:37.91%; animation-delay:0.4s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="barhal" style="left:32.91%; top:37.91%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="sortir" style="left:38.38%; top:37.76%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="sortir" style="left:45.37%; top:37.76%; animation-delay:0.2s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="sortir" style="left:52.35%; top:37.76%; animation-delay:0.4s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="sortir" style="left:58.8%; top:37.76%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="treaser" style="left:66.6%; top:37.6%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="treaser" style="left:72.03%; top:37.6%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="treaser" style="left:77.45%; top:37.6%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:20.64%; top:43.9%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:31.42%; top:43.9%; animation-delay:0.15s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:42.2%; top:43.9%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:52.99%; top:43.9%; animation-delay:0.45s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:63.77%; top:43.9%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:75.89%; top:43.9%; animation-delay:0.75s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="security" style="left:42.97%; top:48.73%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="security" style="left:49.8%; top:48.73%; animation-delay:0.25s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="security" style="left:56.64%; top:48.73%; animation-delay:0.5s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-fork" data-zone="hub-left" style="left:23.69%; top:23.93%; animation-delay:0.0s;"><svg viewBox="0 0 26 20" class="fig-fork">
+      <rect x="2" y="6" width="16" height="9" rx="2" class="f-body"/>
+      <rect x="17" y="2" width="3" height="16" class="f-mast"/>
+      <rect x="20" y="7" width="5" height="2" class="f-fork"/>
+      <circle cx="6" cy="16" r="2.4" class="f-wheel"/>
+      <circle cx="14" cy="16" r="2.4" class="f-wheel"/>
+    </svg></div><div class="fig fig-fork" data-zone="hub-center" style="left:43.21%; top:23.93%; animation-delay:0.3s;"><svg viewBox="0 0 26 20" class="fig-fork">
+      <rect x="2" y="6" width="16" height="9" rx="2" class="f-body"/>
+      <rect x="17" y="2" width="3" height="16" class="f-mast"/>
+      <rect x="20" y="7" width="5" height="2" class="f-fork"/>
+      <circle cx="6" cy="16" r="2.4" class="f-wheel"/>
+      <circle cx="14" cy="16" r="2.4" class="f-wheel"/>
+    </svg></div><div class="fig fig-fork" data-zone="hub-right" style="left:63.23%; top:23.93%; animation-delay:0.6s;"><svg viewBox="0 0 26 20" class="fig-fork">
+      <rect x="2" y="6" width="16" height="9" rx="2" class="f-body"/>
+      <rect x="17" y="2" width="3" height="16" class="f-mast"/>
+      <rect x="20" y="7" width="5" height="2" class="f-fork"/>
+      <circle cx="6" cy="16" r="2.4" class="f-wheel"/>
+      <circle cx="14" cy="16" r="2.4" class="f-wheel"/>
+    </svg></div><div class="fig fig-person" data-zone="penampungan" style="left:8.3%; top:38.09%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person" data-zone="penampungan" style="left:14.65%; top:38.09%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:84.47%; top:30.6%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:87.4%; top:30.6%; animation-delay:0.15s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:90.33%; top:30.6%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:93.26%; top:30.6%; animation-delay:0.45s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:96.19%; top:30.6%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:84.96%; top:33.85%; animation-delay:0.1s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:87.89%; top:33.85%; animation-delay:0.25s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:91.31%; top:33.85%; animation-delay:0.4s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:94.24%; top:33.85%; animation-delay:0.55s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-truck" data-zone="inbound-left" style="left:5.86%; top:51.76%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="inbound-left" style="left:12.21%; top:51.76%; animation-delay:0.3s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="inbound-left" style="left:18.55%; top:51.76%; animation-delay:0.6s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="inbound-left" style="left:24.9%; top:51.76%; animation-delay:0.9s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="inbound-left" style="left:31.25%; top:51.76%; animation-delay:1.2s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="inbound-right" style="left:67.38%; top:51.76%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="inbound-right" style="left:73.73%; top:51.76%; animation-delay:0.3s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="inbound-right" style="left:80.08%; top:51.76%; animation-delay:0.6s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="inbound-right" style="left:86.43%; top:51.76%; animation-delay:0.9s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck" data-zone="inbound-right" style="left:92.77%; top:51.76%; animation-delay:1.2s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck fig-truck-big" data-zone="return" style="left:10.74%; top:12.37%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div><div class="fig fig-truck fig-truck-big" data-zone="return" style="left:87.89%; top:13.02%; animation-delay:0.4s;"><svg viewBox="0 0 16 32" class="fig-truck">
+      <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
+      <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
+      <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
+      <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
+      <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
+    </svg></div>
+  </div>
+
+  <div class="infobar" id="infobar">
+    <div class="placeholder">Klik salah satu area pada gambar di atas (termasuk Area Penampungan, Kantor CCTV, Pintu Inbound, Return, dll) untuk melihat animasinya dan membaca penjelasannya di sini.</div>
+  </div>
+
+  <div class="controls" id="legend">
+    <button class="step-btn" data-key="inbound-left" onclick="activate('inbound-left')"><span class="num">1</span>Inbound</button><button class="step-btn" data-key="sortir" onclick="activate('sortir')"><span class="num">2</span>Sortir Manual</button><button class="step-btn" data-key="hub-center" onclick="activate('hub-center')"><span class="num">3</span>Hub</button><button class="step-btn" data-key="bagging" onclick="activate('bagging')"><span class="num">4</span>Bagging & Packing</button><button class="step-btn" data-key="bagging" onclick="activate('bagging')"><span class="num">5</span>Bag Selesai</button><button class="step-btn" data-key="inbound-right" onclick="activate('inbound-right')"><span class="num">6</span>Staging</button><button class="step-btn" data-key="inbound-right" onclick="activate('inbound-right')"><span class="num">7</span>Outbound</button><button class="step-btn" data-key="return" onclick="activate('return')"><span class="num">8</span>Return Processing</button>
+  </div>
+  <div class="controls secondary-row" id="legend2">
+    <button class="step-btn" data-key="penampungan" onclick="activate('penampungan')">Area Penampungan</button><button class="step-btn" data-key="kantor-cctv" onclick="activate('kantor-cctv')">Kantor CCTV</button><button class="step-btn" data-key="security" onclick="activate('security')">Pos Security</button><button class="step-btn" data-key="titik-kumpul" onclick="activate('titik-kumpul')">Titik Kumpul</button>
+  </div>
+
+  <div class="toolbar">
+    <button onclick="resetAll()">Reset</button>
+  </div>
+
+  <p class="hint">Gambar dasar adalah denah asli — figur petugas dan truk kecil di atasnya bergerak sesuai posisi asli ketika areanya diklik.</p>
+</div>
+
+<script>
+  const zoneMeta = {};
+  document.querySelectorAll('.hotspot').forEach(el => {
+    zoneMeta[el.id.replace('hs-','')] = { title: el.dataset.title, desc: el.dataset.desc };
+  });
+
+  function activate(key){
+    document.querySelectorAll('.hotspot').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.fig').forEach(el => el.classList.remove('on'));
+
+    const target = document.getElementById('hs-' + key);
+    if(target) target.classList.add('active');
+    document.querySelectorAll('.fig[data-zone="' + key + '"]').forEach(el => el.classList.add('on'));
+
+    const meta = zoneMeta[key];
+    const bar = document.getElementById('infobar');
+    if(meta){
+      bar.innerHTML = '<div class="title">' + meta.title + '</div><div class="desc">' + meta.desc + '</div>';
+    }
+
+    document.querySelectorAll('.step-btn').forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.key === key);
+    });
+  }
+
+  function resetAll(){
+    document.querySelectorAll('.hotspot').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.fig').forEach(el => el.classList.remove('on'));
+    document.querySelectorAll('.step-btn').forEach(btn => btn.classList.remove('selected'));
+    document.getElementById('infobar').innerHTML =
+      '<div class="placeholder">Klik salah satu area pada gambar di atas untuk melihat penjelasannya di sini.</div>';
+  }
+</script>
+</body>
+</html>
