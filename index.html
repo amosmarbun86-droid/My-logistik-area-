@@ -91,26 +91,42 @@
   .toolbar button{ background:rgba(255,255,255,.1); color:#dbe6f5; border:none; border-radius:8px; padding:8px 16px; font-size:.82rem; font-weight:600; cursor:pointer; }
   .hint{text-align:center;color:#9fb6d6;font-size:.75rem;margin-top:14px;}
 
-
-  /* Gerakan mengikuti titik operator/forklift yang memang terlihat pada denah */
-  .fig.on{will-change:left,top,transform;}
-  .fig.on .p-body{animation:pBob 0.75s ease-in-out infinite;}
-  .fig.on .p-arm{animation:pArm 0.75s ease-in-out infinite;}
-  .fig.walking svg{filter:drop-shadow(0 0 3px rgba(255,220,80,.9));}
-  .fig.walking .p-body{animation:pBob .42s ease-in-out infinite;}
-
   @media (prefers-reduced-motion: reduce){ .ring, .fig.on .p-body, .fig.on .p-arm, .fig.on .fig-fork, .fig.on .fig-truck, .fig.on .fig-truck-big { animation:none!important; } }
+
+  /* PROFESSIONAL WAREHOUSE CONTROL UI */
+  :root{--navy:#07182d;--panel:#0b213d;--line:rgba(255,255,255,.11);--gold:#f2a93c;--cyan:#54d6ff;--green:#45e29b;--muted:#8fa8c7;}
+  body{background:radial-gradient(circle at 50% -10%,#12375d 0,#07182d 42%,#040d18 100%);padding:12px 10px 40px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;color:#fff;margin:0 auto 12px;max-width:1000px}
+  .brand{display:flex;align-items:center;gap:10px}.brand-dot{width:11px;height:11px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green);flex:none}.brand h1{font-size:clamp(1rem,3.8vw,1.45rem);letter-spacing:.04em;margin:0}.brand p{margin:3px 0 0;color:#90aac8;font-size:.72rem}.live-badge{font-size:.68rem;font-weight:800;letter-spacing:.08em;padding:7px 10px;border:1px solid rgba(69,226,155,.35);border-radius:999px;color:#a7f4d2;background:rgba(69,226,155,.08);white-space:nowrap}.live-badge span{display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;margin-right:5px;box-shadow:0 0 8px var(--green)}
+  .dashboard{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 auto 8px;max-width:1000px}.metric,.mission,.timeline-wrap,.actions,.legend-panel{background:rgba(8,29,52,.82);border:1px solid var(--line);box-shadow:0 10px 24px rgba(0,0,0,.16);backdrop-filter:blur(10px)}.metric{border-radius:10px;padding:9px;display:flex;align-items:center;gap:8px}.metric-icon{font-size:1rem}.metric small{display:block;color:#7f9abb;font-size:.57rem;letter-spacing:.08em}.metric strong{display:block;color:#f4f8ff;font-size:.82rem;margin-top:2px}.mission{max-width:1000px;margin:0 auto 10px;border-radius:12px;padding:12px 14px}.mission-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.eyebrow{color:var(--cyan);font-size:.58rem;letter-spacing:.14em;font-weight:800}.mission h2{margin:2px 0 2px;color:#fff;font-size:1rem}.mission p{margin:0;color:#9eb4cf;font-size:.72rem}.timer{font-variant-numeric:tabular-nums;color:var(--green);font-weight:800;font-size:1rem}.progress{height:4px;background:rgba(255,255,255,.08);border-radius:4px;margin-top:10px;overflow:hidden}.progress span{display:block;height:100%;width:12.5%;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .4s ease}
+  .stage{border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 45px rgba(0,0,0,.4)}.route-layer{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;color:var(--cyan);opacity:0;transition:opacity .25s}.route-layer.show{opacity:.9}.route-layer path{filter:drop-shadow(0 0 4px rgba(84,214,255,.7));stroke-dasharray:2 1.5;animation:routeFlow .8s linear infinite}@keyframes routeFlow{to{stroke-dashoffset:-3.5}}.route-label{position:absolute;right:1.2%;top:1.2%;z-index:6;background:rgba(4,14,25,.82);border:1px solid rgba(84,214,255,.35);color:#a9ebff;border-radius:7px;padding:4px 7px;font-size:.58rem;opacity:0;transition:.2s}.route-label.show{opacity:1}
+  .fig.walking{filter:drop-shadow(0 0 3px rgba(84,214,255,.9))}.fig.walking .p-body{animation:pBob .42s ease-in-out infinite}.fig.walking .p-arm{animation:pArm .42s ease-in-out infinite}.fig.on{z-index:7}
+  .timeline-wrap{max-width:1000px;margin:10px auto 0;border-radius:12px;padding:10px}.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:#e9f2ff;font-size:.68rem;font-weight:800;letter-spacing:.1em}.section-title small{font-size:.58rem;color:var(--green);letter-spacing:0}.timeline{display:flex;align-items:center;gap:5px;overflow-x:auto;padding:2px 1px 5px;scrollbar-width:thin}.timeline i{height:1px;min-width:14px;background:#34506f}.step-btn{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);color:#b9cbe0;border-radius:9px;padding:6px 8px;font-size:.68rem;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;transition:.2s}.step-btn .num{width:19px;height:19px;border-radius:50%;background:#263f5d;color:#d9e8fa;font-size:.65rem;font-weight:800;display:flex;align-items:center;justify-content:center}.step-btn.selected{background:rgba(84,214,255,.1);border-color:var(--cyan);color:#fff;box-shadow:0 0 12px rgba(84,214,255,.12)}.step-btn.selected .num{background:var(--cyan);color:#061424}.step-btn.done{border-color:rgba(69,226,155,.25)}.step-btn.done .num{background:rgba(69,226,155,.25);color:#8df2c5}
+  .actions{max-width:1000px;margin:8px auto 0;padding:8px;border-radius:10px;display:flex;flex-wrap:wrap;justify-content:center;gap:7px}.actions button,.actions label{background:rgba(255,255,255,.07);color:#dce9f8;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 11px;font-size:.7rem;font-weight:700;cursor:pointer}.actions .primary{background:linear-gradient(135deg,#0c7794,#18a78d);border-color:rgba(84,214,255,.4);color:#fff}.actions label{display:flex;align-items:center;gap:5px}.actions select{background:#0b213d;color:#fff;border:0;font-size:.7rem}.legend-panel{max-width:1000px;margin:8px auto 0;border-radius:10px;padding:8px 10px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;color:#9db3ce;font-size:.63rem}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}.operator{background:#2f6fb3}.forklift{background:#f2a93c}.truck{background:#c94a3d}.route{background:var(--cyan)}.legend-note{margin-left:auto;color:#6884a4}.hint{font-size:.64rem;color:#7089a8}
+  @media(max-width:650px){.topbar{align-items:flex-start}.live-badge{font-size:.55rem}.dashboard{grid-template-columns:repeat(3,1fr)}.metric:nth-child(4),.metric:nth-child(5){display:none}.metric{padding:7px}.metric strong{font-size:.72rem}.mission p{font-size:.65rem}.timeline{margin-right:-3px}.step-btn{font-size:.62rem}.legend-note{width:100%;margin-left:0}.brand p{max-width:240px}}
+
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>Denah Gudang &amp; Alur Operasional</h1>
-    <p>Klik area pada gambar — petugas dan truk di posisi itu akan bergerak</p>
+  <header class="topbar">
+    <div class="brand"><span class="brand-dot"></span><div><h1>WAREHOUSE OPERATION CONTROL</h1><p>Visualisasi alur kerja, pergerakan operator, forklift & kendaraan</p></div></div>
+    <div class="live-badge"><span></span> LIVE OPERATION</div>
   </header>
 
+  <section class="dashboard">
+    <div class="metric"><span class="metric-icon">⚡</span><div><small>STATUS</small><strong id="statusText">READY</strong></div></div>
+    <div class="metric"><span class="metric-icon">▶</span><div><small>STEP AKTIF</small><strong id="stepText">1 / 8</strong></div></div>
+    <div class="metric"><span class="metric-icon">👷</span><div><small>OPERATOR</small><strong id="operatorCount">0</strong></div></div>
+    <div class="metric"><span class="metric-icon">🚜</span><div><small>FORKLIFT</small><strong id="forkliftCount">0</strong></div></div>
+    <div class="metric"><span class="metric-icon">🚚</span><div><small>TRUCK</small><strong id="truckCount">0</strong></div></div>
+  </section>
+  <section class="mission">
+    <div class="mission-head"><div><span class="eyebrow">CURRENT PROCESS</span><h2 id="currentTitle">Inbound</h2><p id="currentDesc">Penerimaan barang, scan dan input data sebelum masuk area gudang.</p></div><div class="timer" id="timer">00:00</div></div>
+    <div class="progress"><span id="progressBar"></span></div>
+  </section>
   <div class="stage">
-    <img src="denah-gudang.webp" alt="Denah gudang">
+    <img src="denah-gudang.webp" alt="Denah gudang dan alur operasional" loading="eager" decoding="async" alt="Denah gudang">
     
     <div class="hotspot" id="hs-return" data-title="Return Processing" data-desc="Cek, scan, sortir, repack/hold barang return. 5 operator (R1, R2, R4, R5 + 1 station). Truk R3 keluar-masuk lewat jalur samping."
          style="left:21.97%; top:6.18%; width:41.02%; height:8.14%;"
@@ -182,7 +198,7 @@
          onclick="activate('kantor-cctv')">
       <div class="ring"></div>
     </div>
-    <div class="fig fig-person" data-zone="return" data-motion-index="0" style="left:30.6%; top:12.85%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+    <div class="fig fig-person" data-zone="return" style="left:26.07%; top:12.85%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -190,7 +206,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="return" data-motion-index="1" style="left:36.8%; top:12.85%; animation-delay:0.15s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="return" style="left:32.64%; top:12.85%; animation-delay:0.15s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -198,7 +214,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="return" data-motion-index="2" style="left:42.6%; top:12.85%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="return" style="left:39.2%; top:12.85%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -206,7 +222,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="return" data-motion-index="3" style="left:48.5%; top:12.85%; animation-delay:0.45s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="return" style="left:45.76%; top:12.85%; animation-delay:0.45s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -214,7 +230,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="return" data-motion-index="4" style="left:54.6%; top:12.85%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="return" style="left:52.32%; top:12.85%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -222,7 +238,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="return" data-motion-index="5" style="left:60.6%; top:12.85%; animation-delay:0.75s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="return" style="left:58.89%; top:12.85%; animation-delay:0.75s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -230,7 +246,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="barhal" data-motion-index="0" style="left:19.73%; top:37.91%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="barhal" style="left:19.73%; top:37.91%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -238,7 +254,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="barhal" data-motion-index="1" style="left:24.12%; top:37.91%; animation-delay:0.2s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="barhal" style="left:24.12%; top:37.91%; animation-delay:0.2s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -246,7 +262,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="barhal" data-motion-index="2" style="left:28.52%; top:37.91%; animation-delay:0.4s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="barhal" style="left:28.52%; top:37.91%; animation-delay:0.4s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -254,7 +270,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="barhal" data-motion-index="3" style="left:32.91%; top:37.91%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="barhal" style="left:32.91%; top:37.91%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -262,7 +278,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="sortir" data-motion-index="0" style="left:38.38%; top:37.76%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="sortir" style="left:38.38%; top:37.76%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -270,7 +286,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="sortir" data-motion-index="1" style="left:45.37%; top:37.76%; animation-delay:0.2s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="sortir" style="left:45.37%; top:37.76%; animation-delay:0.2s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -278,7 +294,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="sortir" data-motion-index="2" style="left:52.35%; top:37.76%; animation-delay:0.4s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="sortir" style="left:52.35%; top:37.76%; animation-delay:0.4s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -286,7 +302,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="sortir" data-motion-index="3" style="left:58.8%; top:37.76%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="sortir" style="left:58.8%; top:37.76%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -294,7 +310,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="treaser" data-motion-index="0" style="left:66.6%; top:37.6%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="treaser" style="left:66.6%; top:37.6%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -302,7 +318,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="treaser" data-motion-index="1" style="left:72.03%; top:37.6%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="treaser" style="left:72.03%; top:37.6%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -310,7 +326,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="bagging" data-motion-index="0" style="left:20.64%; top:43.9%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="treaser" style="left:77.45%; top:37.6%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -318,7 +334,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="bagging" data-motion-index="1" style="left:31.42%; top:43.9%; animation-delay:0.15s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:20.64%; top:43.9%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -326,7 +342,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="bagging" data-motion-index="2" style="left:42.2%; top:43.9%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:31.42%; top:43.9%; animation-delay:0.15s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -334,7 +350,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="bagging" data-motion-index="3" style="left:52.99%; top:43.9%; animation-delay:0.45s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:42.2%; top:43.9%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -342,7 +358,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="bagging" data-motion-index="4" style="left:63.77%; top:43.9%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:52.99%; top:43.9%; animation-delay:0.45s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -350,7 +366,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="bagging" data-motion-index="5" style="left:75.89%; top:43.9%; animation-delay:0.75s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:63.77%; top:43.9%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -358,7 +374,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="security" data-motion-index="0" style="left:42.97%; top:48.73%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="bagging" style="left:75.89%; top:43.9%; animation-delay:0.75s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -366,7 +382,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="security" data-motion-index="1" style="left:49.8%; top:48.73%; animation-delay:0.25s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="security" style="left:42.97%; top:48.73%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -374,7 +390,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="security" data-motion-index="2" style="left:56.64%; top:48.73%; animation-delay:0.5s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="security" style="left:49.8%; top:48.73%; animation-delay:0.25s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -382,27 +398,33 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="security" data-motion-index="3" data-motion-index="3" style="left:56.35%; top:48.73%; animation-delay:0.75s;"><svg viewBox="0 0 20 30" class="fig-person">
-      <g class="p-body"><circle cx="10" cy="6" r="4" class="p-head"/><rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/><rect x="6" y="23" width="3" height="6" class="p-leg"/><rect x="11" y="23" width="3" height="6" class="p-leg"/></g><rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-fork" data-zone="hub-left" data-motion-index="0" style="left:23.69%; top:23.93%; animation-delay:0.0s;"><svg viewBox="0 0 26 20" class="fig-fork">
+    </svg></div><div class="fig fig-person" data-zone="security" style="left:56.64%; top:48.73%; animation-delay:0.5s;"><svg viewBox="0 0 20 30" class="fig-person">
+      <g class="p-body">
+        <circle cx="10" cy="6" r="4" class="p-head"/>
+        <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
+        <rect x="6" y="23" width="3" height="6" class="p-leg"/>
+        <rect x="11" y="23" width="3" height="6" class="p-leg"/>
+      </g>
+      <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
+    </svg></div><div class="fig fig-fork" data-zone="hub-left" style="left:23.69%; top:23.93%; animation-delay:0.0s;"><svg viewBox="0 0 26 20" class="fig-fork">
       <rect x="2" y="6" width="16" height="9" rx="2" class="f-body"/>
       <rect x="17" y="2" width="3" height="16" class="f-mast"/>
       <rect x="20" y="7" width="5" height="2" class="f-fork"/>
       <circle cx="6" cy="16" r="2.4" class="f-wheel"/>
       <circle cx="14" cy="16" r="2.4" class="f-wheel"/>
-    </svg></div><div class="fig fig-fork" data-zone="hub-center" data-motion-index="0" style="left:43.21%; top:23.93%; animation-delay:0.3s;"><svg viewBox="0 0 26 20" class="fig-fork">
+    </svg></div><div class="fig fig-fork" data-zone="hub-center" style="left:43.21%; top:23.93%; animation-delay:0.3s;"><svg viewBox="0 0 26 20" class="fig-fork">
       <rect x="2" y="6" width="16" height="9" rx="2" class="f-body"/>
       <rect x="17" y="2" width="3" height="16" class="f-mast"/>
       <rect x="20" y="7" width="5" height="2" class="f-fork"/>
       <circle cx="6" cy="16" r="2.4" class="f-wheel"/>
       <circle cx="14" cy="16" r="2.4" class="f-wheel"/>
-    </svg></div><div class="fig fig-fork" data-zone="hub-right" data-motion-index="0" style="left:63.23%; top:23.93%; animation-delay:0.6s;"><svg viewBox="0 0 26 20" class="fig-fork">
+    </svg></div><div class="fig fig-fork" data-zone="hub-right" style="left:63.23%; top:23.93%; animation-delay:0.6s;"><svg viewBox="0 0 26 20" class="fig-fork">
       <rect x="2" y="6" width="16" height="9" rx="2" class="f-body"/>
       <rect x="17" y="2" width="3" height="16" class="f-mast"/>
       <rect x="20" y="7" width="5" height="2" class="f-fork"/>
       <circle cx="6" cy="16" r="2.4" class="f-wheel"/>
       <circle cx="14" cy="16" r="2.4" class="f-wheel"/>
-    </svg></div><div class="fig fig-person" data-zone="penampungan" data-motion-index="0" style="left:8.3%; top:38.09%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="penampungan" style="left:8.3%; top:38.09%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -410,7 +432,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person" data-zone="penampungan" data-motion-index="1" style="left:14.65%; top:38.09%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person" data-zone="penampungan" style="left:14.65%; top:38.09%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -418,7 +440,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" data-motion-index="0" style="left:84.47%; top:30.6%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:84.47%; top:30.6%; animation-delay:0.0s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -426,7 +448,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" data-motion-index="1" style="left:87.4%; top:30.6%; animation-delay:0.15s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:87.4%; top:30.6%; animation-delay:0.15s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -434,7 +456,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" data-motion-index="2" style="left:90.33%; top:30.6%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:90.33%; top:30.6%; animation-delay:0.3s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -442,7 +464,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" data-motion-index="3" style="left:93.26%; top:30.6%; animation-delay:0.45s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:93.26%; top:30.6%; animation-delay:0.45s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -450,7 +472,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" data-motion-index="4" style="left:96.19%; top:30.6%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:96.19%; top:30.6%; animation-delay:0.6s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -458,7 +480,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" data-motion-index="5" style="left:84.96%; top:33.85%; animation-delay:0.1s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:84.96%; top:33.85%; animation-delay:0.1s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -466,7 +488,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" data-motion-index="6" style="left:87.89%; top:33.85%; animation-delay:0.25s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:87.89%; top:33.85%; animation-delay:0.25s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -474,7 +496,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" data-motion-index="7" style="left:91.31%; top:33.85%; animation-delay:0.4s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:91.31%; top:33.85%; animation-delay:0.4s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -482,7 +504,7 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" data-motion-index="8" style="left:94.24%; top:33.85%; animation-delay:0.55s;"><svg viewBox="0 0 20 30" class="fig-person">
+    </svg></div><div class="fig fig-person small" data-zone="kantor-cctv" style="left:94.24%; top:33.85%; animation-delay:0.55s;"><svg viewBox="0 0 20 30" class="fig-person">
       <g class="p-body">
         <circle cx="10" cy="6" r="4" class="p-head"/>
         <rect x="5" y="10" width="10" height="13" rx="2" class="p-torso"/>
@@ -490,198 +512,142 @@
         <rect x="11" y="23" width="3" height="6" class="p-leg"/>
       </g>
       <rect x="14" y="11" width="3" height="9" rx="1.5" class="p-arm"/>
-    </svg></div><div class="fig fig-truck" data-zone="inbound-left" data-motion-index="0" style="left:5.86%; top:51.76%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck" data-zone="inbound-left" style="left:5.86%; top:51.76%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck" data-zone="inbound-left" data-motion-index="1" style="left:12.21%; top:51.76%; animation-delay:0.3s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck" data-zone="inbound-left" style="left:12.21%; top:51.76%; animation-delay:0.3s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck" data-zone="inbound-left" data-motion-index="2" style="left:18.55%; top:51.76%; animation-delay:0.6s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck" data-zone="inbound-left" style="left:18.55%; top:51.76%; animation-delay:0.6s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck" data-zone="inbound-left" data-motion-index="3" style="left:24.9%; top:51.76%; animation-delay:0.9s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck" data-zone="inbound-left" style="left:24.9%; top:51.76%; animation-delay:0.9s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck" data-zone="inbound-left" data-motion-index="4" style="left:31.25%; top:51.76%; animation-delay:1.2s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck" data-zone="inbound-left" style="left:31.25%; top:51.76%; animation-delay:1.2s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck" data-zone="inbound-right" data-motion-index="0" style="left:67.38%; top:51.76%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck" data-zone="inbound-right" style="left:67.38%; top:51.76%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck" data-zone="inbound-right" data-motion-index="1" style="left:73.73%; top:51.76%; animation-delay:0.3s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck" data-zone="inbound-right" style="left:73.73%; top:51.76%; animation-delay:0.3s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck" data-zone="inbound-right" data-motion-index="2" style="left:80.08%; top:51.76%; animation-delay:0.6s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck" data-zone="inbound-right" style="left:80.08%; top:51.76%; animation-delay:0.6s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck" data-zone="inbound-right" data-motion-index="3" style="left:86.43%; top:51.76%; animation-delay:0.9s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck" data-zone="inbound-right" style="left:86.43%; top:51.76%; animation-delay:0.9s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck" data-zone="inbound-right" data-motion-index="4" style="left:92.77%; top:51.76%; animation-delay:1.2s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck" data-zone="inbound-right" style="left:92.77%; top:51.76%; animation-delay:1.2s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck fig-truck-big" data-zone="return" data-motion-index="6" style="left:10.74%; top:12.37%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck fig-truck-big" data-zone="return" style="left:10.74%; top:12.37%; animation-delay:0.0s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
-    </svg></div><div class="fig fig-truck fig-truck-big" data-zone="return" data-motion-index="7" style="left:87.89%; top:13.02%; animation-delay:0.4s;"><svg viewBox="0 0 16 32" class="fig-truck">
+    </svg></div><div class="fig fig-truck fig-truck-big" data-zone="return" style="left:87.89%; top:13.02%; animation-delay:0.4s;"><svg viewBox="0 0 16 32" class="fig-truck">
       <rect x="1" y="1" width="14" height="18" rx="1.5" class="t-trailer"/>
       <rect x="2" y="19" width="12" height="10" rx="2" class="t-cab"/>
       <rect x="4" y="21" width="8" height="4" rx="1" class="t-windshield"/>
       <circle cx="5" cy="30" r="1.8" class="t-wheel"/>
       <circle cx="11" cy="30" r="1.8" class="t-wheel"/>
     </svg></div>
+  <svg class="route-layer" id="routeLayer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="currentColor"/></marker></defs><path id="routePath" d="" fill="none" stroke="currentColor" stroke-width="0.55" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/></svg>
+    <div class="route-label" id="routeLabel">Jalur proses</div>
   </div>
 
   <div class="infobar" id="infobar">
     <div class="placeholder">Klik salah satu area pada gambar di atas (termasuk Area Penampungan, Kantor CCTV, Pintu Inbound, Return, dll) untuk melihat animasinya dan membaca penjelasannya di sini.</div>
   </div>
 
-  <div class="controls" id="legend">
-    <button class="step-btn" data-key="inbound-left" onclick="activate('inbound-left')"><span class="num">1</span>Inbound</button><button class="step-btn" data-key="sortir" onclick="activate('sortir')"><span class="num">2</span>Sortir Manual</button><button class="step-btn" data-key="bagging" onclick="activate('bagging')"><span class="num">3</span>Bagging & Packing</button><button class="step-btn" data-key="hub-center" onclick="activate('hub-center')"><span class="num">4</span>Hub</button><button class="step-btn" data-key="bagging" onclick="activate('bagging')"><span class="num">5</span>Bag Selesai</button><button class="step-btn" data-key="inbound-right" onclick="activate('inbound-right')"><span class="num">6</span>Staging</button><button class="step-btn" data-key="inbound-right" onclick="activate('inbound-right')"><span class="num">7</span>Outbound</button><button class="step-btn" data-key="return" onclick="activate('return')"><span class="num">8</span>Return Processing</button>
-  </div>
-  <div class="controls secondary-row" id="legend2">
-    <button class="step-btn" data-key="penampungan" onclick="activate('penampungan')">Area Penampungan</button><button class="step-btn" data-key="kantor-cctv" onclick="activate('kantor-cctv')">Kantor CCTV</button><button class="step-btn" data-key="security" onclick="activate('security')">Pos Security</button><button class="step-btn" data-key="titik-kumpul" onclick="activate('titik-kumpul')">Titik Kumpul</button>
-  </div>
-
-  <div class="toolbar">
-    <button onclick="resetAll()">Reset</button>
-  </div>
-
-  <p class="hint">Gambar dasar tetap asli — saat area diklik, figur bergerak dari satu posisi orang/forklift ke posisi berikutnya mengikuti jalur di denah.</p>
+  <section class="timeline-wrap">
+    <div class="section-title"><span>WORKFLOW TIMELINE</span><small id="workflowMode">Manual</small></div>
+    <div class="timeline" id="timeline">
+      <button class="step-btn" data-step="1" data-key="inbound-left" onclick="selectStep(1)"><span class="num">1</span><span>Inbound</span></button>
+      <i></i><button class="step-btn" data-step="2" data-key="sortir" onclick="selectStep(2)"><span class="num">2</span><span>Sortir Manual</span></button>
+      <i></i><button class="step-btn" data-step="3" data-key="bagging" onclick="selectStep(3)"><span class="num">3</span><span>Bagging & Packing</span></button>
+      <i></i><button class="step-btn" data-step="4" data-key="hub-center" onclick="selectStep(4)"><span class="num">4</span><span>Hub</span></button>
+      <i></i><button class="step-btn" data-step="5" data-key="bagging" onclick="selectStep(5)"><span class="num">5</span><span>Bag Selesai</span></button>
+      <i></i><button class="step-btn" data-step="6" data-key="inbound-right" onclick="selectStep(6)"><span class="num">6</span><span>Staging</span></button>
+      <i></i><button class="step-btn" data-step="7" data-key="inbound-right" onclick="selectStep(7)"><span class="num">7</span><span>Outbound</span></button>
+      <i></i><button class="step-btn" data-step="8" data-key="return" onclick="selectStep(8)"><span class="num">8</span><span>Return Processing</span></button>
+    </div>
+  </section>
+  <section class="actions">
+    <button class="primary" id="playBtn" onclick="toggleSimulation()">▶ Mulai Alur</button>
+    <button onclick="pauseSimulation()">⏸ Pause</button>
+    <button onclick="resetAll()">↺ Reset</button>
+    <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    <label>Speed <select id="speed" onchange="setSpeed(this.value)"><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="0.5">0.5×</option></select></label>
+  </section>
+  <section class="legend-panel"><span><b class="dot operator"></b> Operator</span><span><b class="dot forklift"></b> Forklift</span><span><b class="dot truck"></b> Truck</span><span><b class="dot route"></b> Jalur aktif</span><span class="legend-note">Klik area denah untuk detail</span></section>
+  <p class="hint">Simulasi ini bersifat visual untuk menjelaskan alur operasional gudang. Posisi denah asli tetap dipertahankan.</p>
 </div>
 
 <script>
-  const zoneMeta = {};
-  document.querySelectorAll('.hotspot').forEach(el => {
-    zoneMeta[el.id.replace('hs-','')] = { title: el.dataset.title, desc: el.dataset.desc };
-  });
-
-  // Titik-titik ini mengikuti posisi orang/forklift yang terlihat pada gambar dasar.
-  const motionPaths = {
-    'return': [[30.6,13.0],[36.8,13.0],[42.6,13.0],[48.5,13.0],[54.6,13.0],[60.6,13.0]],
-    'returnTruck': [[10.7,16.0],[10.7,10.5],[10.7,16.0],[87.9,10.5],[87.9,16.0],[87.9,10.5]],
-    'barhal': [[21.0,37.8],[25.4,37.8],[29.7,37.8],[33.7,37.8]],
-    'sortir': [[38.0,37.8],[44.7,37.8],[51.4,37.8],[58.0,37.8]],
-    'treaser': [[69.0,41.0],[75.2,41.0]],
-    'bagging': [[20.6,43.9],[31.4,43.9],[42.2,43.9],[53.0,43.9],[63.8,43.9],[75.9,43.9]],
-    'security': [[43.4,48.7],[47.7,48.7],[52.0,48.7],[56.4,48.7]],
-    'penampungan': [[8.3,38.0],[14.7,38.0]],
-    'kantor-cctv': [[84.5,30.6],[87.4,30.6],[90.3,30.6],[93.3,30.6],[96.2,30.6],[85.0,33.8],[87.9,33.8],[91.3,33.8],[94.2,33.8]],
-    'hub-left': [[23.7,20.0],[23.7,27.8],[23.7,31.0]],
-    'hub-center': [[43.2,19.0],[43.2,26.0],[43.2,31.0]],
-    'hub-right': [[63.2,19.0],[63.2,26.0],[63.2,31.0]],
-    'inbound-left': [[5.9,51.8],[12.2,51.8],[18.6,51.8],[24.9,51.8],[31.3,51.8]],
-    'inbound-right': [[67.4,51.8],[73.7,51.8],[80.1,51.8],[86.4,51.8],[92.8,51.8]]
-  };
-
-  let motionToken = 0;
-  let rafId = 0;
-
-  function setPoint(el, point){
-    el.style.left = point[0] + '%';
-    el.style.top = point[1] + '%';
-  }
-
-  function animateZone(key, token){
-    const figs = [...document.querySelectorAll('.fig[data-zone="' + key + '"]')];
-    const pathFor = (el) => {
-      if(key === 'return' && el.classList.contains('fig-truck')) return motionPaths.returnTruck;
-      return motionPaths[key];
-    };
-    if(!figs.length || token !== motionToken) return;
-    if(!pathFor(figs[0]) || pathFor(figs[0]).length < 2) return;
-
-    const cycle = key === 'kantor-cctv' ? 6500 : (key === 'return' ? 5200 : 4200);
-    const start = performance.now();
-
-    function frame(now){
-      if(token !== motionToken) return;
-      figs.forEach((el, idx) => {
-        const path = pathFor(el);
-        if(!path || path.length < 2) return;
-        const n = path.length;
-        const step = cycle / n;
-        const phase = ((now - start) + idx * (step * 0.65)) % cycle;
-        const pos = phase / step;
-        const i = Math.floor(pos) % n;
-        const f = pos - Math.floor(pos);
-        const a = path[i], b = path[(i + 1) % n];
-        // smoothstep membuat perpindahan antar orang lebih natural
-        const s = f*f*(3-2*f);
-        setPoint(el, [a[0] + (b[0]-a[0])*s, a[1] + (b[1]-a[1])*s]);
-        el.classList.add('walking');
-      });
-      rafId = requestAnimationFrame(frame);
-    }
-    rafId = requestAnimationFrame(frame);
-  }
-
-  function activate(key){
-    cancelAnimationFrame(rafId);
-    motionToken++;
-    document.querySelectorAll('.hotspot').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.fig').forEach(el => el.classList.remove('on','walking'));
-
-    const target = document.getElementById('hs-' + key);
-    if(target) target.classList.add('active');
-    const figs = document.querySelectorAll('.fig[data-zone="' + key + '"]');
-    figs.forEach(el => el.classList.add('on'));
-
-    const meta = zoneMeta[key];
-    const bar = document.getElementById('infobar');
-    if(meta){
-      bar.innerHTML = '<div class="title">' + meta.title + '</div><div class="desc">' + meta.desc + '</div>';
-    }
-
-    document.querySelectorAll('.step-btn').forEach(btn => {
-      btn.classList.toggle('selected', btn.dataset.key === key);
-    });
-
-    animateZone(key, motionToken);
-  }
-
-  function resetAll(){
-    cancelAnimationFrame(rafId);
-    motionToken++;
-    document.querySelectorAll('.hotspot').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.fig').forEach(el => el.classList.remove('on','walking'));
-    document.querySelectorAll('.step-btn').forEach(btn => btn.classList.remove('selected'));
-    document.getElementById('infobar').innerHTML =
-      '<div class="placeholder">Klik salah satu area pada gambar di atas untuk melihat penjelasannya di sini.</div>';
-  }
+const zoneMeta={};
+document.querySelectorAll('.hotspot').forEach(el=>zoneMeta[el.id.replace('hs-','')]={title:el.dataset.title,desc:el.dataset.desc});
+const steps=[
+ {key:'inbound-left',title:'Inbound',desc:'Penerimaan barang, scan dan input data sebelum masuk area gudang.',route:[[5,52],[18,52],[31,52],[31,44],[24,44]],label:'INBOUND → PENAMPUNGAN'},
+ {key:'sortir',title:'Sortir Manual',desc:'Pemisahan barang ke keranjang tujuan sebelum proses lanjut.',route:[[31,44],[38,38],[46,38],[54,38],[59,38]],label:'PENAMPUNGAN → SORTIR'},
+ {key:'bagging',title:'Bagging & Packing',desc:'Barang masuk karung, ditimbang, seal, lalu diberi label.',route:[[20,44],[31,44],[42,44],[53,44],[64,44],[76,44]],label:'SORTIR → BAGGING'},
+ {key:'hub-center',title:'Hub',desc:'Forklift mendistribusikan barang ke hub tujuan.',route:[[43,38],[43,32],[43,24],[63,24]],label:'BAGGING → HUB'},
+ {key:'bagging',title:'Bag Selesai',desc:'Bag selesai diverifikasi dan siap dipindahkan ke staging.',route:[[76,44],[68,44],[64,44]],label:'BAGGING → BAG SELESAI'},
+ {key:'inbound-right',title:'Staging',desc:'Barang yang siap dikirim dikumpulkan dan menunggu proses outbound.',route:[[64,52],[74,52],[84,52],[92,52]],label:'STAGING'},
+ {key:'inbound-right',title:'Outbound',desc:'Pengecekan dokumen dan pemuatan kendaraan sebelum berangkat.',route:[[92,52],[84,52],[74,52],[67,52]],label:'OUTBOUND → DOCK'},
+ {key:'return',title:'Return Processing',desc:'Cek, scan, sortir, repack atau hold barang return.',route:[[88,13],[76,13],[60,13],[45,13],[31,13],[11,13]],label:'RETURN PROCESSING'}
+];
+let current=0,playing=false,timerStart=0,elapsed=0,interval=null,speed=1,raf=0;
+const $=id=>document.getElementById(id);
+function countFor(key){const figs=[...document.querySelectorAll('.fig[data-zone="'+key+'"]')]; return {op:figs.filter(x=>x.classList.contains('fig-person')).length,truck:figs.filter(x=>x.classList.contains('fig-truck')).length,fork:figs.filter(x=>x.classList.contains('fig-fork')).length};}
+function drawRoute(points){const path=$('routePath'); if(!points||points.length<2){$('routeLayer').classList.remove('show');$('routeLabel').classList.remove('show');return;} let d='M '+points[0][0]+' '+points[0][1]; for(let i=1;i<points.length;i++)d+=' L '+points[i][0]+' '+points[i][1]; path.setAttribute('d',d);$('routeLayer').classList.add('show');$('routeLabel').classList.add('show');}
+function activate(key,stepNo=current+1){document.querySelectorAll('.hotspot').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.fig').forEach(x=>{x.classList.remove('on','walking')});const target=$('hs-'+key);if(target)target.classList.add('active');const figs=document.querySelectorAll('.fig[data-zone="'+key+'"]');figs.forEach(x=>{x.classList.add('on','walking')});const meta=zoneMeta[key];if(meta){$('infobar').innerHTML='<div class="title">'+meta.title+'</div><div class="desc">'+meta.desc+'</div>';$('currentTitle').textContent=steps[stepNo-1]?.title||meta.title;$('currentDesc').textContent=steps[stepNo-1]?.desc||meta.desc;}
+ document.querySelectorAll('.step-btn').forEach(x=>{const n=+x.dataset.step;x.classList.toggle('selected',n===stepNo);x.classList.toggle('done',n<stepNo)});$('stepText').textContent=stepNo+' / 8';$('progressBar').style.width=(stepNo/8*100)+'%';const c=countFor(key);$('operatorCount').textContent=c.op;$('forkliftCount').textContent=c.fork;$('truckCount').textContent=c.truck;const st=steps[stepNo-1];drawRoute(st?.route);$('routeLabel').textContent=st?.label||'Jalur proses';$('statusText').textContent=playing?'RUNNING':'READY';current=stepNo-1;}
+function selectStep(n){playing=false;clearTimeout(interval);$('playBtn').textContent='▶ Mulai Alur';activate(steps[n-1].key,n);resetClock();$('workflowMode').textContent='Manual';}
+function toggleSimulation(){if(playing){pauseSimulation();return;}playing=true;$('playBtn').textContent='⏸ Pause Alur';$('workflowMode').textContent='AUTO SIMULATION';$('statusText').textContent='RUNNING';timerStart=performance.now()-elapsed;runClock();runStep();}
+function runStep(){activate(steps[current].key,current+1);interval=setTimeout(()=>{if(!playing)return;current=(current+1)%steps.length;if(current===0)elapsed=0;runStep();},Math.max(1800,4200/speed));}
+function pauseSimulation(){playing=false;clearTimeout(interval);cancelAnimationFrame(raf);$('playBtn').textContent='▶ Lanjutkan Alur';$('workflowMode').textContent='Paused';$('statusText').textContent='PAUSED';}
+function resetClock(){elapsed=0;$('timer').textContent='00:00';cancelAnimationFrame(raf)}
+function runClock(){function tick(now){if(!playing)return;elapsed=now-timerStart;let sec=Math.floor(elapsed/1000);$('timer').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');raf=requestAnimationFrame(tick)}raf=requestAnimationFrame(tick)}
+function setSpeed(v){speed=+v;if(playing){clearTimeout(interval);runStep();}}
+function resetAll(){playing=false;clearTimeout(interval);cancelAnimationFrame(raf);current=0;resetClock();$('playBtn').textContent='▶ Mulai Alur';$('workflowMode').textContent='Manual';$('statusText').textContent='READY';activate(steps[0].key,1)}
+function toggleFullscreen(){const el=document.querySelector('.wrap');if(!document.fullscreenElement)el.requestFullscreen?.();else document.exitFullscreen?.()}
+// Klik langsung pada area denah tetap berfungsi. Bila bukan workflow utama, tampilkan detail tanpa mengubah nomor timeline.
+document.querySelectorAll('.hotspot').forEach(el=>el.addEventListener('click',()=>{const key=el.id.replace('hs-','');if(steps[current]?.key===key)activate(key,current+1);else activate(key,current+1)}));
+resetAll();
 </script>
 </body>
 </html>
