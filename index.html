@@ -125,6 +125,12 @@
   .lp-sandar{font-size:.58rem;color:#7be8bf;font-weight:700}
   .lp-empty{color:#7f9abb;font-size:.68rem;text-align:center;padding:10px 0}
 
+  /* Label nama rute yang menimpa tulisan HUB 01–20 saat rutenya sedang proses */
+  .hub-live{position:absolute;width:8.4%;height:1.8%;transform:translate(-50%,-50%);display:none;align-items:center;justify-content:center;z-index:8;pointer-events:none;border-radius:6px;background:linear-gradient(#ffc766,#e08f1c);border:1px solid #ffe2a8;box-shadow:0 0 10px rgba(242,169,60,.85);animation:hubGlow 1.2s ease-in-out infinite alternate;overflow:hidden}
+  .hub-live.on{display:flex}
+  .hub-live span{color:#07182d;font-weight:800;font-size:min(1.15vw,11px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
+  @keyframes hubGlow{from{box-shadow:0 0 4px rgba(242,169,60,.5);}to{box-shadow:0 0 14px rgba(242,169,60,1);}}
+
   /* Highlight zona Hub kiri/kanan saat ada rute berstatus "proses" */
   .hotspot.live-active .ring{ opacity:.85 !important; border-color:#f2a93c; animation:pulseRingLive 1.1s ease-out infinite; }
   @keyframes pulseRingLive{
@@ -720,6 +726,76 @@ const LIVE_STATUS_URL = 'https://alarm-telegram-24jam.onrender.com/api/status-li
 const LIVE_POLL_MS = 15000;
 const statusLabel = {freeload:'Freeload', proses:'Sedang Proses', selesai:'Selesai', '':'Menunggu', none:'Menunggu'};
 
+// Peta hub tetap → nama rute. Isi sesuai daftar hub kamu.
+// Nama rute harus sama dengan kolom rute di Alarm Dashboard (huruf besar/kecil tidak masalah).
+// Satu hub boleh punya lebih dari satu rute: 1:['RUTE A','RUTE B']
+const HUB_ROUTE_MAP = {
+  // 1:'NAMA RUTE',
+  // 2:'NAMA RUTE',
+  // ... sampai 20
+};
+
+// Posisi tulisan HUB 01–20 di gambar denah (piksel gambar asli 1024x1536)
+const HUB_Y = [272,300,328,357,385,414,441,468,494,518];
+const hubEls = {};
+(function(){
+  const stage = document.querySelector('.stage');
+  for(let n=1;n<=20;n++){
+    const i=(n-1)%10;
+    const x = n<=10 ? 318-24*i/9 : 710+30*i/9;
+    const el=document.createElement('div');
+    el.className='hub-live';
+    el.style.left=(x/1024*100)+'%';
+    el.style.top=(HUB_Y[i]/1536*100)+'%';
+    el.innerHTML='<span></span>';
+    stage.appendChild(el);
+    hubEls[n]=el;
+  }
+})();
+function normRoute(s){return String(s||'').trim().toUpperCase().replace(/\s+/g,' ');}
+// Nama singkat untuk label: tujuan pertama setelah tanda ">" (tanpa kata "Hub")
+function shortRoute(r){
+  const parts=String(r||'').split('>');
+  const seg=(parts[1]||parts[0]).split(' - ')[0].replace(/\s+Hub\s*$/i,'').trim();
+  return seg||String(r||'');
+}
+// Mode sementara (HUB_ROUTE_MAP kosong): rute yang sedang proses menempati hub kosong terendah,
+// dan tetap di hub yang sama selama masih proses.
+const autoHub = {};
+function updateHubLabels(jadwal){
+  const proses = (jadwal||[]).filter(j=>j.status==='proses');
+  const useMap = Object.keys(HUB_ROUTE_MAP).length>0;
+  const shown = {}; // hub -> item
+  if(useMap){
+    for(let n=1;n<=20;n++){
+      const val=HUB_ROUTE_MAP[n];
+      const names=(Array.isArray(val)?val:(val?[val]:[])).map(normRoute);
+      const hit=proses.find(j=>names.includes(normRoute(j.route)));
+      if(hit) shown[n]=hit;
+    }
+  } else {
+    const aktif = new Set(proses.map(j=>normRoute(j.route)));
+    Object.keys(autoHub).forEach(k=>{ if(!aktif.has(k)) delete autoHub[k]; });
+    const dipakai = new Set(Object.values(autoHub));
+    proses.forEach(j=>{
+      const k=normRoute(j.route);
+      if(autoHub[k]) return;
+      for(let n=1;n<=20;n++){ if(!dipakai.has(n)){ autoHub[k]=n; dipakai.add(n); break; } }
+    });
+    proses.forEach(j=>{ const n=autoHub[normRoute(j.route)]; if(n) shown[n]=j; });
+  }
+  for(let n=1;n<=20;n++){
+    const el=hubEls[n], item=shown[n];
+    if(item){
+      el.querySelector('span').textContent=shortRoute(item.route);
+      el.title=item.route;
+      el.classList.add('on');
+    } else {
+      el.classList.remove('on');
+    }
+  }
+}
+
 function renderLiveStatus(data){
   const list = $('lpList');
   const jadwal = (data && data.jadwal) || [];
@@ -741,6 +817,8 @@ function renderLiveStatus(data){
   $('lpSub').textContent = 'Terhubung — update terakhir '+now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 
   const hubLeft = $('hs-hub-left'), hubRight = $('hs-hub-right');
+  updateHubLabels(jadwal);
+  if(Object.keys(HUB_ROUTE_MAP).length===0) $('lpSub').textContent += ' · Penempatan hub otomatis (sementara)';
   if(data && data.ada_proses){
     hubLeft?.classList.add('live-active');
     hubRight?.classList.add('live-active');
@@ -760,6 +838,7 @@ async function fetchLiveStatus(){
     $('lpBadge').textContent = 'OFFLINE';
     $('lpBadge').className = 'lp-badge off';
     $('lpSub').textContent = 'Tidak bisa terhubung ke Alarm Dashboard 24 Jam.';
+    updateHubLabels([]);
   }
 }
 fetchLiveStatus();
