@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -726,13 +727,10 @@ const LIVE_STATUS_URL = 'https://alarm-telegram-24jam.onrender.com/api/status-li
 const LIVE_POLL_MS = 15000;
 const statusLabel = {freeload:'Freeload', proses:'Sedang Proses', selesai:'Selesai', '':'Menunggu', none:'Menunggu'};
 
-// Peta hub tetap → nama rute. Isi sesuai daftar hub kamu.
-// Nama rute harus sama dengan kolom rute di Alarm Dashboard (huruf besar/kecil tidak masalah).
-// Satu hub boleh punya lebih dari satu rute: 1:['RUTE A','RUTE B']
-const HUB_ROUTE_MAP = {
-  // 1:'NAMA RUTE',
-  // 2:'NAMA RUTE',
-  // ... sampai 20
+// (Opsional) Kunci hub tujuan ke nomor hub tertentu di denah: nama hub tujuan (tanpa kata "Hub") -> nomor 1–20.
+// Hub tujuan yang tidak ada di sini otomatis menempati hub kosong terdekat.
+// Contoh: 'ULU BARUMUN': 3, 'SOSA': 4
+const HUB_SLOT_MAP = {
 };
 
 // Posisi tulisan HUB 01–20 di gambar denah (piksel gambar asli 1024x1536)
@@ -753,42 +751,52 @@ const hubEls = {};
   }
 })();
 function normRoute(s){return String(s||'').trim().toUpperCase().replace(/\s+/g,' ');}
-// Nama singkat untuk label: tujuan pertama setelah tanda ">" (tanpa kata "Hub")
-function shortRoute(r){
-  const parts=String(r||'').split('>');
-  const seg=(parts[1]||parts[0]).split(' - ')[0].replace(/\s+Hub\s*$/i,'').trim();
-  return seg||String(r||'');
+// Pecah satu rute jadi daftar hub tujuan (2–4 hub per mobil), tanpa kata "Hub" dan tanpa titik asal
+function routeHubs(r){
+  const s=String(r||'').replace(/Siborong\s*-\s*Borong/gi,'Siborong-Borong');
+  const parts=s.split('>');
+  const base=parts.length>1 ? parts.slice(1).join(' - ') : s;
+  const names=base.split(/\s+-\s+/).map(x=>x.trim())
+    .filter(x=>x && !/^(Siborong-Borong DC|Cileungsi DC)$/i.test(x))
+    .map(x=>x.replace(/\s+Hub\s*$/i,'').trim());
+  return names.length?names:[String(r||'')];
 }
-// Mode sementara (HUB_ROUTE_MAP kosong): rute yang sedang proses menempati hub kosong terendah,
-// dan tetap di hub yang sama selama masih proses.
+// Tiap rute yang sedang proses menempati sebanyak jumlah hub tujuannya, berurutan dalam satu kolom bila bisa,
+// dan tetap di posisi yang sama selama rute itu masih proses.
 const autoHub = {};
+const PALET=['#ffc766','#7fd8ff','#9df0c4','#f5a3d0','#c9b6ff','#ffb08a'];
+let colorIdx=0;
+function allocSlots(k, used){
+  for(let s=1;s+k-1<=20;s++){
+    if(Math.floor((s-1)/10)!==Math.floor((s+k-2)/10)) continue;
+    let ok=true; for(let j=0;j<k;j++) if(used.has(s+j)){ok=false;break;}
+    if(ok) return Array.from({length:k},(_,j)=>s+j);
+  }
+  const out=[]; for(let n=1;n<=20&&out.length<k;n++) if(!used.has(n)) out.push(n);
+  return out;
+}
 function updateHubLabels(jadwal){
   const proses = (jadwal||[]).filter(j=>j.status==='proses');
-  const useMap = Object.keys(HUB_ROUTE_MAP).length>0;
-  const shown = {}; // hub -> item
-  if(useMap){
-    for(let n=1;n<=20;n++){
-      const val=HUB_ROUTE_MAP[n];
-      const names=(Array.isArray(val)?val:(val?[val]:[])).map(normRoute);
-      const hit=proses.find(j=>names.includes(normRoute(j.route)));
-      if(hit) shown[n]=hit;
-    }
-  } else {
-    const aktif = new Set(proses.map(j=>normRoute(j.route)));
-    Object.keys(autoHub).forEach(k=>{ if(!aktif.has(k)) delete autoHub[k]; });
-    const dipakai = new Set(Object.values(autoHub));
-    proses.forEach(j=>{
-      const k=normRoute(j.route);
-      if(autoHub[k]) return;
-      for(let n=1;n<=20;n++){ if(!dipakai.has(n)){ autoHub[k]=n; dipakai.add(n); break; } }
-    });
-    proses.forEach(j=>{ const n=autoHub[normRoute(j.route)]; if(n) shown[n]=j; });
-  }
+  const aktif = new Set(proses.map(j=>normRoute(j.route)));
+  Object.keys(autoHub).forEach(k=>{ if(!aktif.has(k)) delete autoHub[k]; });
+  const used = new Set(); Object.values(autoHub).forEach(a=>a.slots.forEach(s=>used.add(s)));
+  proses.forEach(j=>{
+    const k=normRoute(j.route); if(autoHub[k]) return;
+    const names=routeHubs(j.route), slots=[];
+    names.forEach((nm,i)=>{ const fx=HUB_SLOT_MAP[normRoute(nm)]; if(fx && !used.has(fx)){ slots[i]=fx; used.add(fx); } });
+    const need=names.map((_,i)=>i).filter(i=>slots[i]===undefined);
+    if(need.length){ const blk=allocSlots(need.length,used); need.forEach((i,idx)=>{ if(blk[idx]){ slots[i]=blk[idx]; used.add(blk[idx]); } }); }
+    autoHub[k]={names,slots,color:PALET[colorIdx++%PALET.length]};
+  });
+  const shown={};
+  proses.forEach(j=>{ const a=autoHub[normRoute(j.route)]; if(!a) return;
+    a.names.forEach((nm,i)=>{ const sl=a.slots[i]; if(sl && !shown[sl]) shown[sl]={nm,route:j.route,color:a.color}; }); });
   for(let n=1;n<=20;n++){
     const el=hubEls[n], item=shown[n];
     if(item){
-      el.querySelector('span').textContent=shortRoute(item.route);
+      el.querySelector('span').textContent=item.nm;
       el.title=item.route;
+      el.style.background=item.color;
       el.classList.add('on');
     } else {
       el.classList.remove('on');
@@ -818,7 +826,7 @@ function renderLiveStatus(data){
 
   const hubLeft = $('hs-hub-left'), hubRight = $('hs-hub-right');
   updateHubLabels(jadwal);
-  if(Object.keys(HUB_ROUTE_MAP).length===0) $('lpSub').textContent += ' · Penempatan hub otomatis (sementara)';
+  if(Object.keys(HUB_SLOT_MAP).length===0) $('lpSub').textContent += ' · Penempatan hub otomatis (sementara)';
   if(data && data.ada_proses){
     hubLeft?.classList.add('live-active');
     hubRight?.classList.add('live-active');
