@@ -105,6 +105,33 @@
   .actions{max-width:1000px;margin:8px auto 0;padding:8px;border-radius:10px;display:flex;flex-wrap:wrap;justify-content:center;gap:7px}.actions button,.actions label{background:rgba(255,255,255,.07);color:#dce9f8;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 11px;font-size:.7rem;font-weight:700;cursor:pointer}.actions .primary{background:linear-gradient(135deg,#0c7794,#18a78d);border-color:rgba(84,214,255,.4);color:#fff}.actions label{display:flex;align-items:center;gap:5px}.actions select{background:#0b213d;color:#fff;border:0;font-size:.7rem}.legend-panel{max-width:1000px;margin:8px auto 0;border-radius:10px;padding:8px 10px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;color:#9db3ce;font-size:.63rem}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}.operator{background:#2f6fb3}.forklift{background:#f2a93c}.truck{background:#c94a3d}.route{background:var(--cyan)}.legend-note{margin-left:auto;color:#6884a4}.hint{font-size:.64rem;color:#7089a8}
   @media(max-width:650px){.topbar{align-items:flex-start}.live-badge{font-size:.55rem}.dashboard{grid-template-columns:repeat(3,1fr)}.metric:nth-child(4),.metric:nth-child(5){display:none}.metric{padding:7px}.metric strong{font-size:.72rem}.mission p{font-size:.65rem}.timeline{margin-right:-3px}.step-btn{font-size:.62rem}.legend-note{width:100%;margin-left:0}.brand p{max-width:240px}}
 
+  /* LIVE ALARM STATUS (integrasi Alarm Dashboard 24 Jam) */
+  .live-panel{max-width:1000px;margin:10px auto 0;border-radius:12px;padding:10px;background:rgba(8,29,52,.82);border:1px solid var(--line);box-shadow:0 10px 24px rgba(0,0,0,.16);backdrop-filter:blur(10px)}
+  .live-panel .lp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .live-panel .lp-title{color:#e9f2ff;font-size:.68rem;font-weight:800;letter-spacing:.1em}
+  .live-panel .lp-sub{font-size:.6rem;color:#7f9abb}
+  .lp-badge{font-size:.6rem;font-weight:800;padding:3px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.15);color:#9db3ce}
+  .lp-badge.on{color:#fff;border-color:rgba(69,226,155,.5);background:rgba(69,226,155,.12)}
+  .lp-badge.off{color:#7f9abb}
+  .lp-list{display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto}
+  .lp-row{display:flex;align-items:center;gap:8px;font-size:.68rem;color:#dbe6f5;background:rgba(255,255,255,.04);border-radius:7px;padding:6px 8px}
+  .lp-row .lp-route{flex:1;font-weight:700;color:#fff}
+  .lp-row .lp-time{color:#8fa6c8;font-size:.6rem}
+  .lp-status{font-size:.58rem;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap}
+  .lp-status.freeload{background:rgba(84,214,255,.15);color:#7fd8ff}
+  .lp-status.proses{background:rgba(242,169,60,.18);color:#f2a93c}
+  .lp-status.selesai{background:rgba(69,226,155,.15);color:#7be8bf}
+  .lp-status.none{background:rgba(255,255,255,.08);color:#8fa6c8}
+  .lp-sandar{font-size:.58rem;color:#7be8bf;font-weight:700}
+  .lp-empty{color:#7f9abb;font-size:.68rem;text-align:center;padding:10px 0}
+
+  /* Highlight zona Hub kiri/kanan saat ada rute berstatus "proses" */
+  .hotspot.live-active .ring{ opacity:.85 !important; border-color:#f2a93c; animation:pulseRingLive 1.1s ease-out infinite; }
+  @keyframes pulseRingLive{
+    0%{box-shadow:0 0 0 0 rgba(242,169,60,.6);}
+    100%{box-shadow:0 0 0 16px rgba(242,169,60,0);}
+  }
+
 </style>
 </head>
 <body>
@@ -638,6 +665,20 @@
     <label>Speed <select id="speed" onchange="setSpeed(this.value)"><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="0.5">0.5×</option></select></label>
   </section>
   <section class="legend-panel"><span><b class="dot operator"></b> Operator</span><span><b class="dot forklift"></b> Forklift</span><span><b class="dot truck"></b> Truck</span><span><b class="dot route"></b> Jalur aktif</span><span class="legend-note">Klik area denah untuk detail</span></section>
+
+  <section class="live-panel" id="livePanel">
+    <div class="lp-head">
+      <div>
+        <div class="lp-title">LIVE ALARM STATUS</div>
+        <div class="lp-sub" id="lpSub">Menghubungkan ke Alarm Dashboard 24 Jam...</div>
+      </div>
+      <span class="lp-badge off" id="lpBadge">OFFLINE</span>
+    </div>
+    <div class="lp-list" id="lpList">
+      <div class="lp-empty">Memuat data...</div>
+    </div>
+  </section>
+
   <p class="hint">Simulasi ini bersifat visual untuk menjelaskan alur operasional gudang. Posisi denah asli tetap dipertahankan.</p>
 </div>
 
@@ -670,6 +711,59 @@ function runClock(){function tick(now){if(!playing)return;elapsed=now-timerStart
 function setSpeed(v){speed=+v;if(playing){clearTimeout(interval);runStep();}}
 function resetAll(){playing=false;clearTimeout(interval);cancelAnimationFrame(raf);current=0;resetClock();$('playBtn').textContent='▶ Mulai Alur';$('workflowMode').textContent='Manual';$('statusText').textContent='READY';activate(steps[0].key,1)}
 function toggleFullscreen(){const el=document.querySelector('.wrap');if(!document.fullscreenElement)el.requestFullscreen?.();else document.exitFullscreen?.()}
+
+// ========================
+// LIVE ALARM STATUS (integrasi Alarm Dashboard 24 Jam)
+// Endpoint read-only, tidak butuh password, tidak bisa mengubah data apa pun.
+// ========================
+const LIVE_STATUS_URL = 'https://alarm-telegram-24jam.onrender.com/api/status-live';
+const LIVE_POLL_MS = 15000;
+const statusLabel = {freeload:'Freeload', proses:'Sedang Proses', selesai:'Selesai', '':'Menunggu', none:'Menunggu'};
+
+function renderLiveStatus(data){
+  const list = $('lpList');
+  const jadwal = (data && data.jadwal) || [];
+  if(jadwal.length === 0){
+    list.innerHTML = '<div class="lp-empty">Tidak ada jadwal rute hari ini.</div>';
+  } else {
+    list.innerHTML = jadwal.map(item=>{
+      const st = item.status || 'none';
+      const cls = ['freeload','proses','selesai'].includes(st) ? st : 'none';
+      const sandar = item.sudah_sandar ? '<span class="lp-sandar">🚛 Sudah Sandar</span>' : '';
+      return '<div class="lp-row"><span class="lp-route">'+item.route+(item.slot?(' · Slot '+item.slot):'')+'</span>'+
+        '<span class="lp-time">'+item.start+'–'+item.selesai+'</span>'+
+        '<span class="lp-status '+cls+'">'+(statusLabel[st]||'Menunggu')+'</span>'+sandar+'</div>';
+    }).join('');
+  }
+  $('lpBadge').textContent = 'LIVE';
+  $('lpBadge').className = 'lp-badge on';
+  const now = new Date();
+  $('lpSub').textContent = 'Terhubung — update terakhir '+now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+  const hubLeft = $('hs-hub-left'), hubRight = $('hs-hub-right');
+  if(data && data.ada_proses){
+    hubLeft?.classList.add('live-active');
+    hubRight?.classList.add('live-active');
+  } else {
+    hubLeft?.classList.remove('live-active');
+    hubRight?.classList.remove('live-active');
+  }
+}
+
+async function fetchLiveStatus(){
+  try{
+    const res = await fetch(LIVE_STATUS_URL, {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    renderLiveStatus(data);
+  }catch(e){
+    $('lpBadge').textContent = 'OFFLINE';
+    $('lpBadge').className = 'lp-badge off';
+    $('lpSub').textContent = 'Tidak bisa terhubung ke Alarm Dashboard 24 Jam.';
+  }
+}
+fetchLiveStatus();
+setInterval(fetchLiveStatus, LIVE_POLL_MS);
 // Klik langsung pada area denah tetap berfungsi. Bila bukan workflow utama, tampilkan detail tanpa mengubah nomor timeline.
 document.querySelectorAll('.hotspot').forEach(el=>el.addEventListener('click',()=>{const key=el.id.replace('hs-','');if(steps[current]?.key===key)activate(key,current+1);else activate(key,current+1)}));
 resetAll();
