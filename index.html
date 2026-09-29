@@ -125,6 +125,16 @@
   .lp-sandar{font-size:.58rem;color:#7be8bf;font-weight:700}
   .lp-empty{color:#7f9abb;font-size:.68rem;text-align:center;padding:10px 0}
 
+  .lp-summary{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .lp-chip{font-size:.6rem;font-weight:700;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#c6d6ee;white-space:nowrap}
+  .lp-chip b{color:#fff}
+  .lp-search{width:100%;box-sizing:border-box;margin-bottom:8px;padding:7px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff;font-size:.72rem;outline:none}
+  .lp-search::placeholder{color:#7f9abb}
+  .lp-status.telat{background:rgba(201,74,61,.22);color:#ff9c90}
+  .hub-live.late-pulse{animation:hubLatePulse .8s ease-in-out infinite alternate}
+  @keyframes hubLatePulse{from{box-shadow:0 0 6px rgba(201,74,61,.6);}to{box-shadow:0 0 16px rgba(201,74,61,1);}}
+  .lp-row.hl{outline:2px solid var(--cyan);outline-offset:-2px}
+
   /* Label nama rute yang menimpa tulisan HUB 01–20 saat rutenya sedang proses */
   .hub-live{position:absolute;width:8.4%;height:1.8%;transform:translate(-50%,-50%);display:none;align-items:center;justify-content:center;z-index:8;pointer-events:none;border-radius:6px;background:linear-gradient(#ffc766,#e08f1c);border:1px solid #ffe2a8;box-shadow:0 0 10px rgba(242,169,60,.85);animation:hubGlow 1.2s ease-in-out infinite alternate;overflow:hidden;cursor:pointer}
   .hub-live.on{display:flex;pointer-events:auto}
@@ -680,6 +690,8 @@
       </div>
       <span class="lp-badge off" id="lpBadge">OFFLINE</span>
     </div>
+    <div class="lp-summary" id="lpSummary"></div>
+    <input type="text" class="lp-search" id="lpSearch" placeholder="🔍 Cari nama rute/hub tujuan..." oninput="onLiveSearch(this.value)">
     <div class="lp-list" id="lpList">
       <div class="lp-empty">Memuat data...</div>
     </div>
@@ -725,6 +737,66 @@ function toggleFullscreen(){const el=document.querySelector('.wrap');if(!documen
 const LIVE_STATUS_URL = 'https://alarm-telegram-24jam.onrender.com/api/status-live';
 const LIVE_POLL_MS = 15000;
 const statusLabel = {freeload:'Freeload', proses:'Sedang Proses', selesai:'Selesai', '':'Menunggu', none:'Menunggu'};
+let lastJadwal = [];
+
+function toMinutes(hm){ const p=String(hm||'').split(':'); const h=+p[0],m=+p[1]; return (isFinite(h)&&isFinite(m)) ? h*60+m : null; }
+function jakartaNowHM(){
+  return new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+}
+// "Telat" = jadwal belum mulai proses sama sekali (status kosong) padahal jam start sudah lewat hari ini.
+function isLate(item){
+  const st=item.status||'';
+  if(st==='proses'||st==='selesai'||st==='freeload') return false;
+  const now=toMinutes(jakartaNowHM()), start=toMinutes(item.start);
+  if(now===null||start===null) return false;
+  return now>=start && (now-start)<720; // batasi 12 jam supaya tidak salah tandai lintas hari
+}
+function renderSummary(jadwal){
+  const total=jadwal.length;
+  const selesai=jadwal.filter(j=>j.status==='selesai').length;
+  const proses=jadwal.filter(j=>j.status==='proses').length;
+  const freeload=jadwal.filter(j=>j.status==='freeload').length;
+  const telat=jadwal.filter(isLate).length;
+  const durs=jadwal.filter(j=>j.status==='selesai').map(j=>{const a=toMinutes(j.start),b=toMinutes(j.selesai);return (a!==null&&b!==null&&b>=a)?(b-a):null;}).filter(d=>d!==null);
+  const avg = durs.length? Math.round(durs.reduce((a,b)=>a+b,0)/durs.length) : null;
+  const chip=(label,val,extra)=>'<span class="lp-chip"'+(extra||'')+'>'+label+': <b>'+val+'</b></span>';
+  $('lpSummary').innerHTML =
+    chip('Total mobil',total)+
+    chip('Selesai',selesai)+
+    chip('Sedang Proses',proses)+
+    chip('Freeload',freeload)+
+    (telat>0?chip('⚠️ Telat',telat,' style="background:rgba(201,74,61,.22);border-color:rgba(201,74,61,.4);color:#ff9c90"'):'')+
+    (avg!==null?chip('Rata-rata durasi',avg+' menit'):'');
+}
+function renderJadwalList(jadwal, query){
+  const list=$('lpList');
+  const q=(query||'').trim().toUpperCase();
+  const filtered = q ? jadwal.filter(j=>j.route.toUpperCase().includes(q)) : jadwal;
+  if(filtered.length===0){
+    list.innerHTML = '<div class="lp-empty">'+(q?'Tidak ada rute yang cocok dengan pencarian.':'Tidak ada jadwal rute hari ini.')+'</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(item=>{
+    const st = item.status || 'none';
+    const late = isLate(item);
+    const cls = late ? 'telat' : (['freeload','proses','selesai'].includes(st) ? st : 'none');
+    const label = late ? '⚠️ Telat' : (statusLabel[st]||'Menunggu');
+    const sandar = item.sudah_sandar ? '<span class="lp-sandar">🚛 Sudah Sandar</span>' : '';
+    return '<div class="lp-row"><span class="lp-route">'+item.route+(item.slot?(' · Slot '+item.slot):'')+'</span>'+
+      '<span class="lp-time">'+item.start+'–'+item.selesai+'</span>'+
+      '<span class="lp-status '+cls+'">'+label+'</span>'+sandar+'</div>';
+  }).join('');
+}
+function onLiveSearch(q){
+  renderJadwalList(lastJadwal, q);
+  // Sorot kotak hub yang cocok dengan pencarian (kalau sedang aktif di denah)
+  const query=(q||'').trim().toUpperCase();
+  for(let n=1;n<=20;n++){
+    const el=hubEls[n]; if(!el) continue;
+    const match = query && el.classList.contains('on') && (el.title||'').toUpperCase().includes(query);
+    el.style.outline = match ? '3px solid #54d6ff' : '';
+  }
+}
 
 // (Opsional) Kunci hub tujuan ke nomor hub tertentu di denah: nama hub tujuan (tanpa kata "Hub") -> nomor 1–20.
 // Hub tujuan yang tidak ada di sini otomatis menempati hub kosong terdekat.
@@ -805,18 +877,9 @@ function updateHubLabels(jadwal){
 function renderLiveStatus(data){
   const list = $('lpList');
   const jadwal = (data && data.jadwal) || [];
-  if(jadwal.length === 0){
-    list.innerHTML = '<div class="lp-empty">Tidak ada jadwal rute hari ini.</div>';
-  } else {
-    list.innerHTML = jadwal.map(item=>{
-      const st = item.status || 'none';
-      const cls = ['freeload','proses','selesai'].includes(st) ? st : 'none';
-      const sandar = item.sudah_sandar ? '<span class="lp-sandar">🚛 Sudah Sandar</span>' : '';
-      return '<div class="lp-row"><span class="lp-route">'+item.route+(item.slot?(' · Slot '+item.slot):'')+'</span>'+
-        '<span class="lp-time">'+item.start+'–'+item.selesai+'</span>'+
-        '<span class="lp-status '+cls+'">'+(statusLabel[st]||'Menunggu')+'</span>'+sandar+'</div>';
-    }).join('');
-  }
+  lastJadwal = jadwal;
+  renderSummary(jadwal);
+  renderJadwalList(jadwal, $('lpSearch').value);
   $('lpBadge').textContent = 'LIVE';
   $('lpBadge').className = 'lp-badge on';
   const now = new Date();
