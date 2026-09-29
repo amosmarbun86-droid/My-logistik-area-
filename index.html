@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -127,8 +126,8 @@
   .lp-empty{color:#7f9abb;font-size:.68rem;text-align:center;padding:10px 0}
 
   /* Label nama rute yang menimpa tulisan HUB 01–20 saat rutenya sedang proses */
-  .hub-live{position:absolute;width:8.4%;height:1.8%;transform:translate(-50%,-50%);display:none;align-items:center;justify-content:center;z-index:8;pointer-events:none;border-radius:6px;background:linear-gradient(#ffc766,#e08f1c);border:1px solid #ffe2a8;box-shadow:0 0 10px rgba(242,169,60,.85);animation:hubGlow 1.2s ease-in-out infinite alternate;overflow:hidden}
-  .hub-live.on{display:flex}
+  .hub-live{position:absolute;width:8.4%;height:1.8%;transform:translate(-50%,-50%);display:none;align-items:center;justify-content:center;z-index:8;pointer-events:none;border-radius:6px;background:linear-gradient(#ffc766,#e08f1c);border:1px solid #ffe2a8;box-shadow:0 0 10px rgba(242,169,60,.85);animation:hubGlow 1.2s ease-in-out infinite alternate;overflow:hidden;cursor:pointer}
+  .hub-live.on{display:flex;pointer-events:auto}
   .hub-live span{color:#07182d;font-weight:800;font-size:min(1.15vw,11px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
   @keyframes hubGlow{from{box-shadow:0 0 4px rgba(242,169,60,.5);}to{box-shadow:0 0 14px rgba(242,169,60,1);}}
 
@@ -761,49 +760,48 @@ function routeHubs(r){
     .map(x=>x.replace(/\s+Hub\s*$/i,'').trim());
   return names.length?names:[String(r||'')];
 }
-// Tiap rute yang sedang proses menempati sebanyak jumlah hub tujuannya, berurutan dalam satu kolom bila bisa,
-// dan tetap di posisi yang sama selama rute itu masih proses.
-const autoHub = {};
+// Satu rute (satu mobil) = SATU kotak hub di denah. Klik kotak untuk lihat semua tujuan hub mobil itu.
+const autoHub = {}; // route(norm) -> {names, slot, color}
 const PALET=['#ffc766','#7fd8ff','#9df0c4','#f5a3d0','#c9b6ff','#ffb08a'];
 let colorIdx=0;
-function allocSlots(k, used){
-  for(let s=1;s+k-1<=20;s++){
-    if(Math.floor((s-1)/10)!==Math.floor((s+k-2)/10)) continue;
-    let ok=true; for(let j=0;j<k;j++) if(used.has(s+j)){ok=false;break;}
-    if(ok) return Array.from({length:k},(_,j)=>s+j);
-  }
-  const out=[]; for(let n=1;n<=20&&out.length<k;n++) if(!used.has(n)) out.push(n);
-  return out;
+function allocSlot(preferName, used){
+  const fx=HUB_SLOT_MAP[normRoute(preferName)];
+  if(fx && !used.has(fx)) return fx;
+  for(let n=1;n<=20;n++) if(!used.has(n)) return n;
+  return null;
+}
+function showHubDetail(item){
+  $('infobar').innerHTML='<div class="title">Mobil — '+item.route+'</div><div class="desc">Tujuan hub: '+item.names.join(' → ')+'<br>Status: '+(statusLabel[item.status]||item.status)+' · Jam '+item.start+'–'+item.selesai+'</div>';
 }
 function updateHubLabels(jadwal){
-  const proses = (jadwal||[]).filter(j=>j.status==='proses');
-  const aktif = new Set(proses.map(j=>normRoute(j.route)));
-  Object.keys(autoHub).forEach(k=>{ if(!aktif.has(k)) delete autoHub[k]; });
-  const used = new Set(); Object.values(autoHub).forEach(a=>a.slots.forEach(s=>used.add(s)));
-  proses.forEach(j=>{
+  const aktifItems=(jadwal||[]).filter(j=>j.status==='proses'||j.status==='freeload');
+  const aktifKeys=new Set(aktifItems.map(j=>normRoute(j.route)));
+  Object.keys(autoHub).forEach(k=>{ if(!aktifKeys.has(k)) delete autoHub[k]; });
+  const used=new Set(Object.values(autoHub).map(a=>a.slot));
+  aktifItems.forEach(j=>{
     const k=normRoute(j.route); if(autoHub[k]) return;
-    const names=routeHubs(j.route), slots=[];
-    names.forEach((nm,i)=>{ const fx=HUB_SLOT_MAP[normRoute(nm)]; if(fx && !used.has(fx)){ slots[i]=fx; used.add(fx); } });
-    const need=names.map((_,i)=>i).filter(i=>slots[i]===undefined);
-    if(need.length){ const blk=allocSlots(need.length,used); need.forEach((i,idx)=>{ if(blk[idx]){ slots[i]=blk[idx]; used.add(blk[idx]); } }); }
-    autoHub[k]={names,slots,color:PALET[colorIdx++%PALET.length]};
+    const names=routeHubs(j.route);
+    const slot=allocSlot(names[0],used); if(!slot) return; used.add(slot);
+    autoHub[k]={names,slot,color:PALET[colorIdx++%PALET.length]};
   });
   const shown={};
-  proses.forEach(j=>{ const a=autoHub[normRoute(j.route)]; if(!a) return;
-    a.names.forEach((nm,i)=>{ const sl=a.slots[i]; if(sl && !shown[sl]) shown[sl]={nm,route:j.route,color:a.color}; }); });
+  aktifItems.forEach(j=>{ const a=autoHub[normRoute(j.route)]; if(!a) return;
+    shown[a.slot]={names:a.names,color:a.color,route:j.route,status:j.status,start:j.start,selesai:j.selesai}; });
   for(let n=1;n<=20;n++){
     const el=hubEls[n], item=shown[n];
     if(item){
-      el.querySelector('span').textContent=item.nm;
-      el.title=item.route;
+      const label=item.names[0]+(item.names.length>1?' +'+(item.names.length-1):'');
+      el.querySelector('span').textContent=label;
+      el.title='Klik untuk lihat semua tujuan';
       el.style.background=item.color;
+      el.onclick=()=>showHubDetail(item);
       el.classList.add('on');
     } else {
+      el.onclick=null;
       el.classList.remove('on');
     }
   }
 }
-
 function renderLiveStatus(data){
   const list = $('lpList');
   const jadwal = (data && data.jadwal) || [];
